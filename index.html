@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="papaparse.js"></script>
+</head>
+<body>
+<button onclick="decrease()">-</button>
+<button onclick="increase()">+</button>
+<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+file= "/data/all_fixation_data_cleaned_up.csv";
+Papa.parse(file, { download: true, header: true, complete: doneReading, error: errorLog });
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+ctx.moveTo(0,0);
+ctx.lineTo(c.width,c.height);
+ctx.stroke();
+ctx.moveTo(0,0);
+ctx.lineTo(c.width,0);
+ctx.stroke();
+ctx.moveTo(0,100);
+ctx.lineTo(c.width,100);
+ctx.stroke();
+
+var sections = 1;
+function increase(){
+	sections++;
+	ctx.clearRect(0,0,c.width,c.height);
+	drawGrid();
+	console.log(sections);
+}
+function decrease(){
+	sections--;
+	ctx.clearRect(0,0,c.width,c.height);
+	drawGrid();
+	console.log(sections);
+}
+function drawGrid(){
+var ySteps = Math.round(c.height/sections);
+var xSteps = Math.round(c.width/sections);
+	ctx.beginPath();
+	for (var i = 0; i< ySteps;i++){
+		ctx.moveTo(0,i*ySteps);
+		ctx.lineTo(c.width,i*ySteps);
+		ctx.stroke();
+	}
+	for(var j=0;j< xSteps;j++){
+		ctx.moveTo(j*xSteps,0);
+		ctx.lineTo(j*xSteps,c.height);
+		ctx.stroke();
+	}
+	ctx.closePath();
+}
+function doneReading(data) {
+	var MaxMappedFixationPointX = Math.max(...Array.from(data.data, o=> o.MappedFixationPointX));
+	var MaxMappedFixationPointY = Math.max(...Array.from(data.data, o=> o.MappedFixationPointY));
+	var MinMappedFixationPointX = Math.min(...Array.from(data.data, o=> o.MappedFixationPointX));
+	var MinMappedFixationPointY = Math.min(...Array.from(data.data, o=> o.MappedFixationPointY));
+	console.log("Max X",MaxMappedFixationPointX);
+	console.log("Max Y",MaxMappedFixationPointY);
+	
+	console.log("Min X",MinMappedFixationPointX);
+	console.log("Min Y",MinMappedFixationPointY);
+	
+	loadedData = data;
+	console.log(data);
+}
+function errorLog(error){
+	console.log(error);
+}
+
+</script>
+
+</body>
+</html>
