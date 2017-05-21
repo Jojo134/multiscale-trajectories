@@ -1,0 +1,11 @@
+select{
+	height:200px; 
+	width:18%;
+	}
+ul{
+	overflow:hidden; 
+	overflow-y:scroll;
+	}
+#myCanvas{
+	border:1px solid #d3d3d3;
+}

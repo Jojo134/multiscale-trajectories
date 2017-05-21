@@ -2,11 +2,13 @@
 <html>
 <head>
 <script src="papaparse.js"></script>
+<link href="style.css" rel="stylesheet"></link>
 </head>
 <body>
+<div id="listContainer"></div>
 <button onclick="decrease()">-</button>
 <button onclick="increase()">+</button>
-<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #d3d3d3;">
+<canvas id="myCanvas" width="1000" height="1000">
 Your browser does not support the HTML5 canvas tag.</canvas>
 
 <script>
@@ -59,6 +61,13 @@ function doneReading(data) {
 	var MaxMappedFixationPointY = Math.max(...Array.from(data.data, o=> o.MappedFixationPointY));
 	var MinMappedFixationPointX = Math.min(...Array.from(data.data, o=> o.MappedFixationPointX));
 	var MinMappedFixationPointY = Math.min(...Array.from(data.data, o=> o.MappedFixationPointY));
+	var users = new Set(Array.from(data.data, o=> o.user));
+	console.log(users);
+	var StimuliName = new Set(Array.from(data.data, o=> o.StimuliName));
+	console.log(StimuliName);
+	document.getElementById('listContainer').appendChild(makeList([...users]));
+	document.getElementById('listContainer').appendChild(makeList([...StimuliName]));
+	
 	console.log("Max X",MaxMappedFixationPointX);
 	console.log("Max Y",MaxMappedFixationPointY);
 	
@@ -72,6 +81,25 @@ function errorLog(error){
 	console.log(error);
 }
 
+function makeList(array) {
+    // Create the list element:
+    var list = document.createElement('select');
+	list.setAttribute("multiple","multiple");
+
+    for(var i = 0; i < array.length; i++) {
+        // Create the list item:
+        var item = document.createElement('option');
+
+        // Set its contents:
+        item.appendChild(document.createTextNode(array[i]));
+
+        // Add it to the list:
+        list.appendChild(item);
+    }
+
+    // Finally, return the constructed list:
+    return list;
+}
 </script>
 
 </body>
