@@ -2,21 +2,23 @@
 <html>
 <head>
 <script src="papaparse.js"></script>
+<!--<script src="jquery-3.2.1.min.js"></script>-->
 <link href="style.css" rel="stylesheet"></link>
 </head>
 <body>
 <div id="listContainer"></div>
 <button onclick="decrease()">-</button>
 <button onclick="increase()">+</button>
+<button onclick="updateView()">Update View</button>
 <canvas id="myCanvas" width="1000" height="1000">
 Your browser does not support the HTML5 canvas tag.</canvas>
 
 <script>
-file= "/data/all_fixation_data_cleaned_up.csv";
+file= '/data/all_fixation_data_cleaned_up.csv';
 Papa.parse(file, { download: true, header: true, complete: doneReading, error: errorLog });
 
-var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
+var c = document.getElementById('myCanvas');
+var ctx = c.getContext('2d');
 ctx.moveTo(0,0);
 ctx.lineTo(c.width,c.height);
 ctx.stroke();
@@ -41,8 +43,8 @@ function decrease(){
 	console.log(sections);
 }
 function drawGrid(){
-var ySteps = Math.round(c.height/sections);
-var xSteps = Math.round(c.width/sections);
+	var ySteps = Math.round(c.height/sections);
+	var xSteps = Math.round(c.width/sections);
 	ctx.beginPath();
 	for (var i = 0; i< ySteps;i++){
 		ctx.moveTo(0,i*ySteps);
@@ -59,45 +61,56 @@ var xSteps = Math.round(c.width/sections);
 function doneReading(data) {
 	var MaxMappedFixationPointX = Math.max(...Array.from(data.data, o=> o.MappedFixationPointX));
 	var MaxMappedFixationPointY = Math.max(...Array.from(data.data, o=> o.MappedFixationPointY));
+	
 	var MinMappedFixationPointX = Math.min(...Array.from(data.data, o=> o.MappedFixationPointX));
 	var MinMappedFixationPointY = Math.min(...Array.from(data.data, o=> o.MappedFixationPointY));
 	var users = new Set(Array.from(data.data, o=> o.user));
 	console.log(users);
 	var StimuliName = new Set(Array.from(data.data, o=> o.StimuliName));
 	console.log(StimuliName);
-	document.getElementById('listContainer').appendChild(makeList([...users]));
-	document.getElementById('listContainer').appendChild(makeList([...StimuliName]));
+	document.getElementById('listContainer').appendChild(makeList('user-list',[...users]));
+	document.getElementById('listContainer').appendChild(makeList('stimuli-list',[...StimuliName]));
 	
-	console.log("Max X",MaxMappedFixationPointX);
-	console.log("Max Y",MaxMappedFixationPointY);
+	console.log('Max X',MaxMappedFixationPointX);
+	console.log('Max Y',MaxMappedFixationPointY);
 	
-	console.log("Min X",MinMappedFixationPointX);
-	console.log("Min Y",MinMappedFixationPointY);
+	console.log('Min X',MinMappedFixationPointX);
+	console.log('Min Y',MinMappedFixationPointY);
 	
-	loadedData = data;
+	loadedData = data.data;
 	console.log(data);
 }
+
 function errorLog(error){
 	console.log(error);
 }
+function updateView(){
+	ctx.clearRect(0,0,c.width,c.height);
+	drawGrid();
+	selected = document.querySelectorAll('#user-list option:checked');
+	valuesUserList = Array.from(selected).map((el) => el.value);
+	console.log(valuesUserList);
+	selected = document.querySelectorAll('#stimuli-list option:checked');
+	valuesStimuliList = Array.from(selected).map((el) => el.value);
+	console.log(valuesStimuliList);
+	filterData =loadedData.filter(o => valuesUserList.indexOf(o.user) !== -1)
+						.filter(o => valuesStimuliList.indexOf(o.StimuliName) !== -1);
+	console.log(filterData);
+	filterData.forEach(d => {ctx.fillRect(d.MappedFixationPointX,d.MappedFixationPointY,5,5);
+	ctx.font = "10px Arial";
+	ctx.fillText(d.user,d.MappedFixationPointX,d.MappedFixationPointY);
+	});
+}
 
-function makeList(array) {
-    // Create the list element:
+function makeList(id, array) {
     var list = document.createElement('select');
-	list.setAttribute("multiple","multiple");
-
+	list.setAttribute('multiple','multiple');
+	list.setAttribute('id', id);
     for(var i = 0; i < array.length; i++) {
-        // Create the list item:
         var item = document.createElement('option');
-
-        // Set its contents:
-        item.appendChild(document.createTextNode(array[i]));
-
-        // Add it to the list:
+		item.appendChild(document.createTextNode(array[i]));
         list.appendChild(item);
     }
-
-    // Finally, return the constructed list:
     return list;
 }
 </script>
