@@ -17,6 +17,7 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 </div>
 </div>
 <script>
+//maybe useful for interactivity https://gist.github.com/starcalibre/5dc0319ed4f92c4fd9f9
 file= '/data/all_fixation_data_cleaned_up.csv';
 Papa.parse(file, { download: true, header: true, complete: doneReading, error: errorLog });
 
@@ -95,8 +96,12 @@ function updateView(){
 	selected = document.querySelectorAll('#stimuli-list option:checked');
 	valuesStimuliList = Array.from(selected).map((el) => el.value);
 	console.log(valuesStimuliList);
-	filterData =loadedData.filter(o => valuesUserList.indexOf(o.user) !== -1)
-						.filter(o => valuesStimuliList.indexOf(o.StimuliName) !== -1);
+	filterData = loadedData.filter(o => valuesUserList.indexOf(o.user) !== -1)
+						.filter(o => valuesStimuliList.indexOf(o.StimuliName) !== -1)
+						//negative raus
+						.filter(o => o.MappedFixationPointX >== 0 && o.MappedFixationPointY >== 0)
+						//max raus
+						.filter(o => o.MappedFixationPointX <== 1200 && o.MappedFixationPointY <== 1700);
 	console.log(filterData);
 	var maxX = Math.max(...Array.from(loadedData, o=> o.MappedFixationPointX));
 	var maxY= Math.max(...Array.from(loadedData, o=> o.MappedFixationPointY));
@@ -106,7 +111,7 @@ function updateView(){
 	var rangeY = maxY - minY;
 	console.log("Values",maxX, minX, rangeX);
 	//offscreenCanvas
-	//negative raus
+	
 	//ctx.scale()
 	/*[
 	user1:[]
