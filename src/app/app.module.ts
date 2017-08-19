@@ -5,6 +5,8 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { TrajviewComponent } from './shared/trajview/trajview.component';
+import { Trajview1Component } from './shared/trajview.1/trajview.component';
+
 import { HomeComponent } from './home/home.component';
 import { routing, appRoutingProviders } from './app.routes';
 
@@ -12,6 +14,7 @@ import { routing, appRoutingProviders } from './app.routes';
   declarations: [
     AppComponent,
     TrajviewComponent,
+    Trajview1Component,
     HomeComponent
   ],
   imports: [
