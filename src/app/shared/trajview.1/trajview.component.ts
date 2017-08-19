@@ -1,5 +1,6 @@
 import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
+import { Trajectory } from '../../data-structures';
 
 @Component({
   selector: 'app-trajview1',
@@ -48,10 +49,6 @@ export class Trajview1Component implements OnInit, OnChanges {
     // set the ranges
     var x = d3.scaleTime().range([0, this.width]);
     var y = d3.scaleLinear().range([this.height, 0]);
-
-    // append the svg obgect to the body of the page
-    // appends a 'group' element to 'svg'
-    // moves the 'group' element to the top left margin
 
     let svg = d3.select(element).append('svg')
       .attr('width', element.offsetWidth)

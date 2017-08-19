@@ -3,6 +3,7 @@ import { Http } from '@angular/http';
 import * as Baby from 'babyparse';
 import 'rxjs/Rx';
 import * as d3 from 'd3';
+import { Trajectory } from '../data-structures';
 
 @Component({
   selector: 'app-home',
@@ -11,27 +12,15 @@ import * as d3 from 'd3';
 })
 export class HomeComponent implements OnInit {
   private chartData: Array<any>;
+  dataLoaded = false;
   filename = 'assets/small_fix_data_cleaned.csv';
-  fix_data: any;
+  fix_data: Array<Trajectory> = [];
+  resolutions: Array<any>;
   constructor(public http: Http) {
   }
-  getData() {
-    return this.http.get(this.filename)
-      .map((res: any) => res.json())
-    //.catch((error: any) => console.log(error));
-  }
-  ngOnInit() {
-    // give everything a chance to get loaded before starting the animation to reduce choppiness
-    setTimeout(() => {
-      this.generateData();
-
-      // change the data periodically
-      setInterval(() => this.generateData(), 3000);
-    }, 1000);
-
+  getTrajectories() {
     d3.tsv(this.filename, (err, data) => {
       console.log(data);
-      this.fix_data = data;
       console.log(d3.max(data, o => +o.MappedFixationPointX));
       var MaxMappedFixationPointX = Math.max(...Array.from(data, o => +o.MappedFixationPointX));
       console.log(MaxMappedFixationPointX);
@@ -42,17 +31,50 @@ export class HomeComponent implements OnInit {
       console.log(users);
       var StimuliName = new Set(Array.from(data, o => o.StimuliName));
       console.log(StimuliName);
+      users.forEach(user => {
+        StimuliName.forEach(stimu => {
+
+          let result = data.filter(d => {
+            return d.StimuliName === stimu && d.user === user
+          })
+          if (result.length) {
+            let nTrajectory = new Trajectory();
+            nTrajectory.participant = user;
+            nTrajectory.stimulus = stimu;
+            nTrajectory.color = this.stringToColor.next(user + stimu);
+            nTrajectory.points = result.map(d => {
+              return {
+                x: +d.MappedFixationPointX,
+                y: +d.MappedFixationPointY,
+                duration: +d.FixationDuration,
+                timestamp: +d.Timestamp,
+                fixationIndex: +d.FixationIndex
+              }
+            })
+            this.fix_data.push(nTrajectory);
+          }
+        })
+      });
+      console.log(this.fix_data)
     });
   }
-  doneReading(data) {
-    console.log('finished reading');
-    //var users = new Set(Array.from(data.data, o=> o.user));
-    console.log(data);
 
+  getResolution() {
+    d3.tsv('assets/resolution.txt', (err, data) => {
+      this.resolutions = data;
+    })
   }
 
-  errorLog(error) {
-    console.log(error);
+  ngOnInit() {
+    // give everything a chance to get loaded before starting the animation to reduce choppiness
+    setTimeout(() => {
+      this.generateData();
+
+      // change the data periodically
+      setInterval(() => this.generateData(), 3000);
+    }, 1000);
+    this.getResolution();
+    this.getTrajectories();
   }
 
   generateData() {

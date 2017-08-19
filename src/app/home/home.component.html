@@ -6,5 +6,5 @@
     </div>
     <app-trajview class="col-9" *ngIf="chartData" [data]="chartData"></app-trajview>
   </div>
-  <app-trajview1 [data]="fix_data"></app-trajview1>
+  <app-trajview1 *ngIf="loaded" [data]="fix_data"></app-trajview1>
 </div>
