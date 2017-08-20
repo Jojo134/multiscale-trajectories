@@ -15,7 +15,8 @@ export class HomeComponent implements OnInit {
   dataLoaded = false;
   filename = 'assets/small_fix_data_cleaned.csv';
   fix_data: Array<Trajectory> = [];
-  resolutions: Array<any>;
+  resolutions: Array<{ city: string, height: number, width: number }> = [];
+
   constructor(public http: Http) {
   }
   getTrajectories() {
@@ -35,7 +36,7 @@ export class HomeComponent implements OnInit {
         StimuliName.forEach(stimu => {
 
           let result = data.filter(d => {
-            return d.StimuliName === stimu && d.user === user
+            return d.StimuliName === stimu && d.user === user && d.MappedFixationPointX
           })
           if (result.length) {
             let nTrajectory = new Trajectory();
@@ -61,7 +62,9 @@ export class HomeComponent implements OnInit {
 
   getResolution() {
     d3.tsv('assets/resolution.txt', (err, data) => {
-      this.resolutions = data;
+      data.forEach(d => {
+        this.resolutions.push({ city: d.city, height: +d.height, width: +d.width })
+      })
     })
   }
 
@@ -75,6 +78,7 @@ export class HomeComponent implements OnInit {
     }, 1000);
     this.getResolution();
     this.getTrajectories();
+    //d3.queue().defer(this.getResolution).await(this.getTrajectories)
   }
 
   generateData() {

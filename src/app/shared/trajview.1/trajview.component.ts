@@ -27,7 +27,7 @@ export class Trajview1Component implements OnInit, OnChanges {
     console.log('trajviewchart created')
     if (this.data) {
       this.updateChart();
-      console.log(this.data)
+      console.log('component', this.data)
     }
   }
 
@@ -40,8 +40,11 @@ export class Trajview1Component implements OnInit, OnChanges {
   createChart() {
     // set the dimensions and margins of the graph
     let element = this.chartContainer.nativeElement;
-    this.width = element.offsetWidth - this.margin.left - this.margin.right;
-    this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
+    //this.width = element.offsetWidth - this.margin.left - this.margin.right;
+    //this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
+
+    this.width = 1650;
+    this.height = 1200;
 
     // parse the date / time
     var parseTime = d3.timeParse("%d-%b-%y");
@@ -51,8 +54,8 @@ export class Trajview1Component implements OnInit, OnChanges {
     var y = d3.scaleLinear().range([this.height, 0]);
 
     let svg = d3.select(element).append('svg')
-      .attr('width', element.offsetWidth)
-      .attr('height', element.offsetHeight)
+      .attr('width', 1700)
+      .attr('height', 1300)
       .append("g")
       .attr("transform",
       "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -61,31 +64,23 @@ export class Trajview1Component implements OnInit, OnChanges {
       .attr("cx", 30)
       .attr("cy", 30)
       .attr("r", 20);
-    /*svg.append("g")
-      .attr("class", "grid")
-      .attr("transform", "translate(0," + this.height + ")")
-      .call(this.make_x_gridlines()
-        .tickSize(-this.height)
-        .tickFormat()
-      )
 
-    // add the Y gridlines
-    svg.append("g")
-      .attr("class", "grid")
-      .call(this.make_y_gridlines()
-        .tickSize(-this.width)
-        .tickFormat()
-      )*/
-  }
-  make_x_gridlines() {
-    return d3.axisBottom(this.xScale)
-      .ticks(5)
-  }
+    svg.append("circle")
+      .attr("cx", 1500)
+      .attr("cy", 1100)
+      .attr("r", 20);
 
-  // gridlines in y axis function
-  make_y_gridlines() {
-    return d3.axisLeft(this.yScale)
-      .ticks(5)
+    var lineFunction = d3.line()
+      .x(function (d) { return d['x']; })
+      .y(function (d) { return d['y']; })
+
+
+    let linegraph = svg.append('path')
+      .attr("d", lineFunction(this.data[0].points))
+      .attr("stroke", "blue")
+      .attr("stroke-width", 2)
+      .attr("fill", "none");
+
   }
 
   updateChart() {
