@@ -19,7 +19,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   private colors: any;
   private xAxis: any;
   private yAxis: any;
-
+  private svg: any;
   constructor() { }
 
   ngOnInit() {
@@ -53,19 +53,19 @@ export class Trajview1Component implements OnInit, OnChanges {
     var x = d3.scaleTime().range([0, this.width]);
     var y = d3.scaleLinear().range([this.height, 0]);
 
-    let svg = d3.select(element).append('svg')
+    this.svg = d3.select(element).append('svg')
       .attr('width', 1700)
       .attr('height', 1300)
       .append("g")
       .attr("transform",
       "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-    var circle = svg.append("circle")
+    var circle = this.svg.append("circle")
       .attr("cx", 30)
       .attr("cy", 30)
       .attr("r", 20);
 
-    svg.append("circle")
+    this.svg.append("circle")
       .attr("cx", 1500)
       .attr("cy", 1100)
       .attr("r", 20);
@@ -75,12 +75,29 @@ export class Trajview1Component implements OnInit, OnChanges {
       .y(function (d) { return d['y']; })
 
 
-    let linegraph = svg.append('path')
+    let linegraph = this.svg.append('path')
       .attr("d", lineFunction(this.data[0].points))
       .attr("stroke", "blue")
       .attr("stroke-width", 2)
       .attr("fill", "none");
 
+    let linegraph1 = []
+    this.data.forEach(element => {
+      linegraph1.push(this.drawTraj(element.points, element.color));
+    });
+
+  }
+
+  linefunc1 = d3.line()
+    .x(function (d) { return d['x']; })
+    .y(function (d) { return d['y']; })
+
+  drawTraj(points, color) {
+    return this.svg.append('path')
+      .attr("d", this.linefunc1(points))
+      .attr("stroke", color)
+      .attr("stroke-width", 2)
+      .attr("fill", "none");
   }
 
   updateChart() {
