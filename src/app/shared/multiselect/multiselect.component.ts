@@ -13,7 +13,7 @@ export class MultiselectComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.items);
+
   }
 
   toggleMultiSelect(event, val) {

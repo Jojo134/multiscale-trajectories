@@ -1,8 +1,9 @@
 <h3>Bar Chart</h3>
-<div class="container">
+<div class="container-fluid">
   <div class="row">
-    <app-multiselect class="col-3" [items]="participants" (selected)="filterChange($event)"></app-multiselect>
-    <app-trajview class="offset-3 col-9" *ngIf="chartData" [data]="chartData"></app-trajview>
+    <app-multiselect class="col-3" [items]="participants" (selectedItems)="filterChange($event)"></app-multiselect>
+    <!--<app-trajview class="offset-3 col-9" *ngIf="chartData" [data]="chartData"></app-trajview>-->
+
+    <app-trajview1 class="col-9" *ngIf="fix_data.length !== 0" [data]="fix_data"></app-trajview1>
   </div>
-  <app-trajview1 *ngIf="fix_data.length !== 0" [data]="fix_data"></app-trajview1>
 </div>

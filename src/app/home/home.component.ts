@@ -81,9 +81,11 @@ export class HomeComponent implements OnInit {
     this.getTrajectories();
     //d3.queue().defer(this.getResolution).await(this.getTrajectories)
   }
-  filterChange(event) {
-    console.log(event);
+
+  filterChange(selected: any[]) {
+    console.log(selected);
   }
+
   generateData() {
     this.chartData = [];
     for (let i = 0; i < (8 + Math.floor(Math.random() * 10)); i++) {
