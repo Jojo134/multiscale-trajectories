@@ -1,0 +1,3 @@
+<div class="multiple-select">
+  <div class="options" *ngFor="let item of items" id={{item.id}} (click)="toggleMultiSelect($event, item)">{{item.name}}</div>
+</div>

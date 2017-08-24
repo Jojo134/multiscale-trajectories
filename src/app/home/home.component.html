@@ -1,10 +1,8 @@
 <h3>Bar Chart</h3>
 <div class="container">
   <div class="row">
-    <div class="col-3">
-      alkshdgflakshdgfalshdfgajs dgfasjdfgalsdfhgalsdfhgalsd hfgaslfhgaslkdfhagsldfgasldkfhgaslkdfhg asldhfgasldfhgalsdahsjdsak
-    </div>
-    <app-trajview class="col-9" *ngIf="chartData" [data]="chartData"></app-trajview>
+    <app-multiselect class="col-3" [items]="participants" (selected)="filterChange($event)"></app-multiselect>
+    <app-trajview class="offset-3 col-9" *ngIf="chartData" [data]="chartData"></app-trajview>
   </div>
   <app-trajview1 *ngIf="fix_data.length !== 0" [data]="fix_data"></app-trajview1>
 </div>

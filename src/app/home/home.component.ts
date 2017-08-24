@@ -13,6 +13,7 @@ import { Trajectory } from '../data-structures';
 export class HomeComponent implements OnInit {
   private chartData: Array<any>;
   dataLoaded = false;
+  participants = [{ name: 'p1', id: 1 }, { name: 'p2', id: 2 }, { name: 'p3', id: 3 }];
   filename = 'assets/small_fix_data_cleaned.csv';
   fix_data: Array<Trajectory> = [];
   resolutions: Array<{ city: string, height: number, width: number }> = [];
@@ -80,7 +81,9 @@ export class HomeComponent implements OnInit {
     this.getTrajectories();
     //d3.queue().defer(this.getResolution).await(this.getTrajectories)
   }
-
+  filterChange(event) {
+    console.log(event);
+  }
   generateData() {
     this.chartData = [];
     for (let i = 0; i < (8 + Math.floor(Math.random() * 10)); i++) {
