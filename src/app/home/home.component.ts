@@ -82,7 +82,11 @@ export class HomeComponent implements OnInit {
     //d3.queue().defer(this.getResolution).await(this.getTrajectories)
   }
 
-  filterChange(selected: any[]) {
+  filterChangeParticipant(selected: any[]) {
+    console.log(selected);
+  }
+
+  filterChangeStimuli(selected: any[]) {
     console.log(selected);
   }
 

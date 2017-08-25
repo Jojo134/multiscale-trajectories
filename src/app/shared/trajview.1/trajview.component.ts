@@ -46,9 +46,6 @@ export class Trajview1Component implements OnInit, OnChanges {
     this.width = 1650;
     this.height = 1200;
 
-    // parse the date / time
-    var parseTime = d3.timeParse("%d-%b-%y");
-
     // set the ranges
     var x = d3.scaleTime().range([0, this.width]);
     var y = d3.scaleLinear().range([this.height, 0]);
@@ -70,22 +67,6 @@ export class Trajview1Component implements OnInit, OnChanges {
       .attr("cy", 1100)
       .attr("r", 20);
 
-    var lineFunction = d3.line()
-      .x(function (d) { return d['x']; })
-      .y(function (d) { return d['y']; })
-
-
-    let linegraph = this.svg.append('path')
-      .attr("d", lineFunction(this.data[0].points))
-      .attr("stroke", "blue")
-      .attr("stroke-width", 2)
-      .attr("fill", "none");
-
-    let linegraph1 = []
-    this.data.forEach(element => {
-      linegraph1.push(this.drawTraj(element.points, element.color));
-    });
-
   }
 
   linefunc1 = d3.line()
@@ -94,6 +75,7 @@ export class Trajview1Component implements OnInit, OnChanges {
 
   drawTraj(points, color) {
     return this.svg.append('path')
+      .attr('class', 'trajectory')
       .attr("d", this.linefunc1(points))
       .attr("stroke", color)
       .attr("stroke-width", 2)
@@ -101,5 +83,16 @@ export class Trajview1Component implements OnInit, OnChanges {
   }
 
   updateChart() {
+    let update = this.svg.selectAll('path').data(this.data);
+
+    update.exit().remove();
+
+    update.enter().append('path')
+      .attr('class', 'trajectory')
+      .attr("stroke-width", 2)
+      .attr("fill", "none")
+      .merge(update)
+      .attr("d", d => { return this.linefunc1(d.points) })
+      .attr("stroke", d => { return d.color; });
   }
 }
