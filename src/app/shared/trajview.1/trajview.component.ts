@@ -24,7 +24,6 @@ export class Trajview1Component implements OnInit, OnChanges {
 
   ngOnInit() {
     this.createChart();
-    console.log('trajviewchart created')
     if (this.data) {
       this.updateChart();
       console.log('component', this.data)

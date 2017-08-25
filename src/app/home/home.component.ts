@@ -13,7 +13,8 @@ import { Trajectory } from '../data-structures';
 export class HomeComponent implements OnInit {
   private chartData: Array<any>;
   dataLoaded = false;
-  participants = [{ name: 'p1', id: 1 }, { name: 'p2', id: 2 }, { name: 'p3', id: 3 }];
+  participants = [];
+  stimuli = [];
   filename = 'assets/small_fix_data_cleaned.csv';
   fix_data: Array<Trajectory> = [];
   resolutions: Array<{ city: string, height: number, width: number }> = [];
@@ -30,9 +31,9 @@ export class HomeComponent implements OnInit {
       var MinMappedFixationPointX = Math.min(...Array.from(data, o => +o.MappedFixationPointX));
       var MinMappedFixationPointY = Math.min(...Array.from(data, o => +o.MappedFixationPointY));
       var users = new Set(Array.from(data, o => o.user));
-      console.log(users);
+      this.participants = Array.from(users).map((u, index) => { return { name: u, id: index }; });
       var StimuliName = new Set(Array.from(data, o => o.StimuliName));
-      console.log(StimuliName);
+      this.stimuli = Array.from(StimuliName).map((s, index) => { return { name: s, id: index } });
       users.forEach(user => {
         StimuliName.forEach(stimu => {
 
