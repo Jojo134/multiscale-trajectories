@@ -85,14 +85,19 @@ export class Trajview1Component implements OnInit, OnChanges {
   updateChart() {
     let update = this.svg.selectAll('path').data(this.data);
 
-    update.exit().remove();
+    update.exit().transition().attr('troke-width', 0).remove();
 
     update.enter().append('path')
       .attr('class', 'trajectory')
+      .attr('stroke-width', 0)
+      .transition()
       .attr("stroke-width", 2)
       .attr("fill", "none")
-      .merge(update)
       .attr("d", d => { return this.linefunc1(d.points) })
       .attr("stroke", d => { return d.color; });
+  }
+  removeItem() {
+    this.data.pop();
+    this.updateChart();
   }
 }
