@@ -67,6 +67,21 @@ export class QTree {
             y: this.boundary.center.y + halfDimension
         }, halfDimension); this.southWest = new QTree(swBoundary);
     }
+    queryRangeTrajectory(range: AABB) {
+        let foundPoints = this.queryRange(range);
+        let foundSub = []
+        let collect = []
+        collect.push(foundPoints[0])
+        for (let i = 1; i < foundPoints.length; i++) {
+            if (foundPoints[i].index - foundPoints[i - 1].index > 1) {
+                foundSub.push(collect);
+                collect = [];
+            }
+            collect.push(foundPoints[i])
+        }
+        foundSub.push(collect)
+        return foundSub;
+    }
 
     queryRange(range: AABB): Array<QuadPoint> {
         // Prepare an array of results
@@ -78,7 +93,6 @@ export class QTree {
         }
         // Check objects at this quad level
         for (let p = 0; p < this.points.length; p++) {
-            console.log(p);
             if (range.containsPoint(this.points[p])) {
                 pointsInRange.push(this.points[p]);
             }
@@ -94,7 +108,6 @@ export class QTree {
         pointsInRange = pointsInRange.concat(this.northEast.queryRange(range));
         pointsInRange = pointsInRange.concat(this.southWest.queryRange(range));
         pointsInRange = pointsInRange.concat(this.southEast.queryRange(range));
-        console.log(pointsInRange);
         return pointsInRange;
     }
 }
@@ -102,6 +115,7 @@ export class QTree {
 export class QuadPoint {
     x: number;
     y: number;
+    index?: number;
 }
 
 export class AABB {

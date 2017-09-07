@@ -20,14 +20,18 @@ export class HomeComponent implements OnInit {
   resolutions: Array<{ city: string, height: number, width: number }> = [];
   qTree: QTree;
   constructor(public http: Http) {
-    let boundary = new AABB({ x: 23, y: 23 }, 2);
+    let boundary = new AABB({ x: 50, y: 50 }, 50);
     this.qTree = new QTree(new AABB({ x: 50, y: 50 }, 50));
-    console.log(this.qTree.insert({ x: 24, y: 24 }));
-    console.log(this.qTree.insert({ x: 74, y: 74 }));
-    console.log(this.qTree.insert({ x: 120, y: 120 }));
+
+    this.qTree.insert({ x: 24, y: 24, index: 0 });
+    this.qTree.insert({ x: 74, y: 74, index: 4 });
+    this.qTree.insert({ x: 73, y: 74, index: 5 });
+    this.qTree.insert({ x: 74, y: 74, index: 6 });
+    //console.log(this.qTree.insert({ x: 120, y: 120, index: }));
 
     console.log(this.qTree);
     console.log(this.qTree.queryRange(boundary));
+    console.log(this.qTree.queryRangeTrajectory(boundary));
   }
   getTrajectories() {
     d3.tsv(this.filename, (err, data) => {
