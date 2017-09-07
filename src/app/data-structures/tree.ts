@@ -7,7 +7,7 @@ export class QTree {
     boundary: AABB;
 
     // Points in this quad tree node
-    points: Array<QuadPoint>[];
+    points: Array<QuadPoint> = [];
 
     // Children
     northWest: QTree;
@@ -16,13 +16,19 @@ export class QTree {
     southEast: QTree;
 
     // Methods
-    constructor(_boundary: AABB) { }
+    constructor(boundary: AABB) {
+        this.boundary = boundary;
+    }
     insert(p: QuadPoint) {
         // Ignore objects that do not belong in this quad tree
         if (!this.boundary.containsPoint(p))
             return false; // object cannot be added
 
         //check for depth?
+        if (this.boundary.halfDimension < 20) {
+            this.points.push(p);
+            return true;
+        }
         // Otherwise, subdivide and then add the point to whichever node will accept it
         if (this.northWest == null)
             this.subdivide();
@@ -36,19 +42,46 @@ export class QTree {
         return false;
     }
 
-    subdivide() { } // create four children that fully divide this quad into four quads of equal area
-    queryRange(range: AABB) {
+    subdivide() {
+        // create four children that fully divide this quad into four quads of equal area
+        let halfDimension = this.boundary.halfDimension / 2
+        let nwBoundary = new AABB({
+            x: this.boundary.center.x - halfDimension,
+            y: this.boundary.center.y - halfDimension
+        }, halfDimension);
+        this.northWest = new QTree(nwBoundary);
+
+        let neBoundary = new AABB({
+            x: this.boundary.center.x + halfDimension,
+            y: this.boundary.center.y - halfDimension
+        }, halfDimension);
+        this.northEast = new QTree(neBoundary);
+
+        let seBoundary = new AABB({
+            x: this.boundary.center.x + halfDimension,
+            y: this.boundary.center.y + halfDimension
+        }, halfDimension); this.southEast = new QTree(seBoundary);
+
+        let swBoundary = new AABB({
+            x: this.boundary.center.x - halfDimension,
+            y: this.boundary.center.y + halfDimension
+        }, halfDimension); this.southWest = new QTree(swBoundary);
+    }
+
+    queryRange(range: AABB): Array<QuadPoint> {
         // Prepare an array of results
-        let pointsInRange: Array<QuadPoint>[];
+        let pointsInRange: Array<QuadPoint> = [];
 
         // Automatically abort if the range does not intersect this quad
-        if (!this.boundary.intersectsAABB(range))
+        if (!this.boundary.intersectsAABB(range)) {
             return pointsInRange; // empty list
-
+        }
         // Check objects at this quad level
         for (let p = 0; p < this.points.length; p++) {
-            if (range.containsPoint(this.points[p]))
+            console.log(p);
+            if (range.containsPoint(this.points[p])) {
                 pointsInRange.push(this.points[p]);
+            }
         }
 
         // Terminate here, if there are no children
@@ -57,24 +90,52 @@ export class QTree {
 
         // Otherwise, add the points from the children
         //could be combined 
-        pointsInRange.concat(this.northWest.queryRange(range));
-        pointsInRange.concat(this.northEast.queryRange(range));
-        pointsInRange.concat(this.southWest.queryRange(range));
-        pointsInRange.concat(this.southEast.queryRange(range));
-
+        pointsInRange = pointsInRange.concat(this.northWest.queryRange(range));
+        pointsInRange = pointsInRange.concat(this.northEast.queryRange(range));
+        pointsInRange = pointsInRange.concat(this.southWest.queryRange(range));
+        pointsInRange = pointsInRange.concat(this.southEast.queryRange(range));
+        console.log(pointsInRange);
         return pointsInRange;
     }
 }
-export class QuadPoint {
 
+export class QuadPoint {
+    x: number;
+    y: number;
 }
+
 export class AABB {
     center: QuadPoint;
     halfDimension: number;
-    containsPoint(point: QuadPoint) {
 
+    constructor(center: QuadPoint, halfDimension: number) {
+        this.center = center;
+        this.halfDimension = halfDimension;
+    }
+
+    public containsPoint(point: QuadPoint) {
+        if (this.inYRange(point) && this.inXRange(point)) {
+            return true;
+        }
+        return false;
+    }
+    private inXRange(point: QuadPoint) {
+        if ((this.center.x + this.halfDimension) > point.x
+            && (this.center.x - this.halfDimension) < point.x) {
+            return true;
+        }
+        return false;
+    }
+    private inYRange(point: QuadPoint) {
+        if ((this.center.y + this.halfDimension) > point.y
+            && (this.center.y - this.halfDimension) < point.y) {
+            return true;
+        }
+        return false;
     }
     intersectsAABB(other: AABB) {
+        return Math.max(this.center.x - this.halfDimension, other.center.x - other.halfDimension) < Math.min(this.center.x + this.halfDimension, other.center.x + other.halfDimension) &&
+            Math.max(this.center.y - this.halfDimension, other.center.y - other.halfDimension) < Math.min(this.center.x + this.halfDimension, other.center.y + other.halfDimension);
 
     }
 }

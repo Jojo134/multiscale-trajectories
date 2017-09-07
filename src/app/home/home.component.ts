@@ -3,7 +3,7 @@ import { Http } from '@angular/http';
 import * as Baby from 'babyparse';
 import 'rxjs/Rx';
 import * as d3 from 'd3';
-import { Trajectory } from '../data-structures';
+import { Trajectory, QTree, AABB } from '../data-structures';
 
 @Component({
   selector: 'app-home',
@@ -18,8 +18,16 @@ export class HomeComponent implements OnInit {
   filename = 'assets/small_fix_data_cleaned.csv';
   fix_data: Array<Trajectory> = [];
   resolutions: Array<{ city: string, height: number, width: number }> = [];
-
+  qTree: QTree;
   constructor(public http: Http) {
+    let boundary = new AABB({ x: 23, y: 23 }, 2);
+    this.qTree = new QTree(new AABB({ x: 50, y: 50 }, 50));
+    console.log(this.qTree.insert({ x: 24, y: 24 }));
+    console.log(this.qTree.insert({ x: 74, y: 74 }));
+    console.log(this.qTree.insert({ x: 120, y: 120 }));
+
+    console.log(this.qTree);
+    console.log(this.qTree.queryRange(boundary));
   }
   getTrajectories() {
     d3.tsv(this.filename, (err, data) => {
@@ -54,6 +62,7 @@ export class HomeComponent implements OnInit {
                 fixationIndex: +d.FixationIndex
               }
             })
+            //[TODO] sort by timestamp
             this.fix_data.push(nTrajectory);
           }
         })
