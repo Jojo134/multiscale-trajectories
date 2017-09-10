@@ -15,10 +15,14 @@ export class HomeComponent implements OnInit {
   dataLoaded = false;
   participants = [];
   stimuli = [];
+  selected_participants = Array<{ name: string, id: number }>();
+  selected_stimuli = Array<{ name: string, id: number }>();
   filename = 'assets/small_fix_data_cleaned.csv';
+  filteredFixData: Array<Trajectory> = [];
   fix_data: Array<Trajectory> = [];
   resolutions: Array<{ city: string, height: number, width: number }> = [];
   qTree: QTree;
+
   constructor(public http: Http) {
     let boundary = new AABB({ x: 50, y: 50 }, 50);
     this.qTree = new QTree(new AABB({ x: 50, y: 50 }, 50));
@@ -66,7 +70,7 @@ export class HomeComponent implements OnInit {
         StimuliName.forEach(stimu => {
 
           let result = data.filter(d => {
-            return d.StimuliName === stimu && d.user === user && d.MappedFixationPointX
+            return d.StimuliName === stimu && d.user === user
           })
           if (result.length) {
             let nTrajectory = new Trajectory();
@@ -82,7 +86,7 @@ export class HomeComponent implements OnInit {
                 fixationIndex: +d.FixationIndex
               }
             })
-            //[TODO] sort by timestamp
+            nTrajectory.points = nTrajectory.points.sort((a, b) => a.timestamp - b.timestamp);
             this.fix_data.push(nTrajectory);
           }
         })
@@ -114,10 +118,14 @@ export class HomeComponent implements OnInit {
 
   filterChangeParticipant(selected: any[]) {
     console.log(selected);
+    this.selected_participants = selected
+    this.filterData();
   }
 
   filterChangeStimuli(selected: any[]) {
     console.log(selected);
+    this.selected_stimuli = selected;
+    this.filterData();
   }
 
   generateData() {

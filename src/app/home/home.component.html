@@ -8,6 +8,6 @@
       <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
       <!--<app-trajview class="offset-3 col-9" *ngIf="chartData" [data]="chartData"></app-trajview>-->
     </div>
-    <app-trajview1 class="col-9" *ngIf="fix_data.length !== 0" [data]="fix_data"></app-trajview1>
+    <app-trajview1 class="col-9" *ngIf="filteredFixData.length !== 0" [data]="filteredFixData"></app-trajview1>
   </div>
 </div>
