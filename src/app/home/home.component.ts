@@ -33,15 +33,31 @@ export class HomeComponent implements OnInit {
     console.log(this.qTree.queryRange(boundary));
     console.log(this.qTree.queryRangeTrajectory(boundary));
   }
+
+  filterData() {
+    this.filteredFixData = this.fix_data.filter(traj => {
+
+      return this.selected_participants.filter(e => e.name === traj.participant).length > 0
+        || this.selected_stimuli.filter(e => e.name === traj.stimulus).length > 0;
+    })
+    console.log(this.filteredFixData)
+    this.removeOutliers();
+  }
+
+  removeOutliers() {
+    this.filteredFixData = this.filteredFixData.filter(traj => {
+      let resolutionname = traj.stimulus.split('_')[1];
+      let data_resolution = this.resolutions.filter(res => res.city === resolutionname)
+      return traj.points.every(p => {
+        return p.x > 0 && p.x < data_resolution[0].width
+          && p.y > 0 && p.y < data_resolution[0].height;
+      });
+    })
+  }
   getTrajectories() {
     d3.tsv(this.filename, (err, data) => {
       console.log(data);
       console.log(d3.max(data, o => +o.MappedFixationPointX));
-      var MaxMappedFixationPointX = Math.max(...Array.from(data, o => +o.MappedFixationPointX));
-      console.log(MaxMappedFixationPointX);
-      var MaxMappedFixationPointY = Math.max(...Array.from(data, o => +o.MappedFixationPointY));
-      var MinMappedFixationPointX = Math.min(...Array.from(data, o => +o.MappedFixationPointX));
-      var MinMappedFixationPointY = Math.min(...Array.from(data, o => +o.MappedFixationPointY));
       var users = new Set(Array.from(data, o => o.user));
       this.participants = Array.from(users).map((u, index) => { return { name: u, id: index }; });
       var StimuliName = new Set(Array.from(data, o => o.StimuliName));
