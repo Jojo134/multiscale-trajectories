@@ -1,3 +1,4 @@
 <div class="multiple-select">
-  <div class="options" *ngFor="let item of items" id={{item.id}} (click)="toggleMultiSelect($event, item)">{{item.name}}</div>
+  <div class="options" *ngFor="let item of items" id={{item.id}} (click)="toggleMultiSelect($event, item)">
+    <i class="fa fa-fw fa-square-o" aria-hidden="true"></i>{{item.name}}</div>
 </div>

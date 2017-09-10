@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-multiselect',
@@ -6,6 +6,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./multiselect.component.css']
 })
 export class MultiselectComponent implements OnInit {
+  @ViewChild('multiselect') element: ElementRef
   @Input() public items: any[] = [];
   @Output() public selectedItems = new EventEmitter<any[]>();
   public selected: any[] = [];
@@ -18,14 +19,13 @@ export class MultiselectComponent implements OnInit {
 
   toggleMultiSelect(event, val) {
     event.preventDefault();
+    let elem = (event.target as Element).getElementsByTagName('i')[0];
     if (this.selected.indexOf(val) == -1) {
       this.selected = [...this.selected, val];
-      var elem = document.getElementById(val.id);
-      elem.className += " fa fa-check";
+      elem.className = elem.className.replace("fa fa-fw fa-square-o", "fa fa-fw fa-check-square-o");
     } else {
-      var elem = document.getElementById(val.id);
-      elem.className = elem.className.split(' ').splice(0, elem.className.split(' ').length - 2).join(' ');
-      this.selected = this.selected.filter(function (elem) {
+      elem.className = elem.className.replace("fa fa-fw fa-check-square-o", "fa fa-fw fa-square-o");
+      this.selected = this.selected.filter(elem => {
         return elem != val;
       })
     }
