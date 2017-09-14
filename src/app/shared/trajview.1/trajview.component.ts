@@ -50,8 +50,11 @@ export class Trajview1Component implements OnInit, OnChanges {
     var y = d3.scaleLinear().range([this.height, 0]);
 
     this.svg = d3.select(element).append('svg')
-      .attr('width', 1700)
-      .attr('height', 1300)
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr("viewBox", "0 0 1700 1300")
+      //.attr('class', 'svg-content-responsive')
+      //.attr('width', 1700)
+      //.attr('height', 1300)
       .append("g")
       .attr("transform",
       "translate(" + this.margin.left + "," + this.margin.top + ")");
