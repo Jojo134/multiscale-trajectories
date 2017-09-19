@@ -50,6 +50,7 @@ export class Trajview1Component implements OnInit, OnChanges {
     var y = d3.scaleLinear().range([this.height, 0]);
 
     this.svg = d3.select(element).append('svg')
+      .attr('class', 'svg-element')
       .attr("preserveAspectRatio", "xMinYMin meet")
       .attr("viewBox", "0 0 1700 1300")
       //.attr('class', 'svg-content-responsive')
@@ -58,17 +59,6 @@ export class Trajview1Component implements OnInit, OnChanges {
       .append("g")
       .attr("transform",
       "translate(" + this.margin.left + "," + this.margin.top + ")");
-
-    var circle = this.svg.append("circle")
-      .attr("cx", 30)
-      .attr("cy", 30)
-      .attr("r", 20);
-
-    this.svg.append("circle")
-      .attr("cx", 1500)
-      .attr("cy", 1100)
-      .attr("r", 20);
-
   }
 
   linefunc1 = d3.line()

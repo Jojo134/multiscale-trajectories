@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Http } from '@angular/http';
 import * as Baby from 'babyparse';
 import 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import * as d3 from 'd3';
 import { Trajectory, QTree, AABB } from '../data-structures';
 
@@ -61,7 +62,6 @@ export class HomeComponent implements OnInit {
   getTrajectories() {
     d3.tsv(this.filename, (err, data) => {
       console.log(data);
-      console.log(d3.max(data, o => +o.MappedFixationPointX));
       var users = new Set(Array.from(data, o => o.user));
       this.participants = Array.from(users).map((u, index) => { return { name: u, id: index }; });
       var StimuliName = new Set(Array.from(data, o => o.StimuliName));
@@ -119,13 +119,13 @@ export class HomeComponent implements OnInit {
   filterChangeParticipant(selected: any[]) {
     console.log(selected);
     this.selected_participants = selected
-    this.filterData();
+    //this.filterData();
   }
 
   filterChangeStimuli(selected: any[]) {
     console.log(selected);
     this.selected_stimuli = selected;
-    this.filterData();
+    //this.filterData();
   }
 
   generateData() {

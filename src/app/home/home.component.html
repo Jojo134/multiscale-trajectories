@@ -1,13 +1,20 @@
 <h3>Bar Chart</h3>
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-3">
+  <div class="container row">
+    <div class="container col-3">
+      <p>file upload</p>
+      <div class="form-group">
+        <label for="usr">Name:</label>
+        <input type="range" min="1" max="8" class="form-control" id="usr">
+      </div>
+      <p>Levelauswahl placeholder</p>
       <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
       <hr>
       <hr>
       <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
       <!--<app-trajview class="offset-3 col-9" *ngIf="chartData" [data]="chartData"></app-trajview>-->
+      <button (click)="filterData()">Filter</button>
     </div>
-    <app-trajview1 class="col-9" *ngIf="filteredFixData.length !== 0" [data]="filteredFixData"></app-trajview1>
+    <app-trajview1 class="container col-9" *ngIf="filteredFixData.length !== 0" [data]="filteredFixData"></app-trajview1>
   </div>
 </div>
