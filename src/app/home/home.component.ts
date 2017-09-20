@@ -14,6 +14,7 @@ import { Trajectory, QTree, AABB } from '../data-structures';
 export class HomeComponent implements OnInit {
   private chartData: Array<any>;
   dataLoaded = false;
+  someRange = 5;
   participants = [];
   stimuli = [];
   selected_participants = Array<{ name: string, id: number }>();

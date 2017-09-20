@@ -10,7 +10,7 @@ import { Trajview1Component } from './shared/trajview.1/trajview.component';
 import { HomeComponent } from './home/home.component';
 import { routing, appRoutingProviders } from './app.routes';
 import { MultiselectComponent } from './shared/multiselect/multiselect.component';
-
+import { NouisliderModule } from 'ng2-nouislider';
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,7 +20,7 @@ import { MultiselectComponent } from './shared/multiselect/multiselect.component
     MultiselectComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule, NouisliderModule,
     FormsModule, HttpModule, routing
   ],
   providers: [appRoutingProviders],

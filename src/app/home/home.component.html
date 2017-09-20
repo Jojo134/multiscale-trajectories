@@ -3,11 +3,11 @@
   <div class="container row">
     <div class="container col-3">
       <p>file upload</p>
-      <div class="form-group">
-        <label for="usr">Name:</label>
-        <input type="range" min="1" max="8" class="form-control" id="usr">
+      <nouislider class="slider-style" [tooltips]="[true]" [step]="1" [connect]="true" [min]="1" [max]="8" [(ngModel)]="someRange"></nouislider>
+      <div class="row">
+        <label for="minSize">minimum size</label>
+        <input readonly id="minSize" type="number">
       </div>
-      <p>Levelauswahl placeholder</p>
       <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
       <hr>
       <hr>
