@@ -5,7 +5,8 @@ export class QTree {
     // Axis-aligned bounding box stored as a center with half-dimensions
     // to represent the boundaries of this quad tree
     boundary: AABB;
-
+    minHalfDimension: number;
+    currentLevel: number;
     // Points in this quad tree node
     points: Array<QuadPoint> = [];
 
@@ -16,16 +17,19 @@ export class QTree {
     southEast: QTree;
 
     // Methods
-    constructor(boundary: AABB) {
+    constructor(boundary: AABB, minHalfDimension: number, currentLevel?: number) {
         this.boundary = boundary;
+        this.minHalfDimension = minHalfDimension;
+        this.currentLevel = currentLevel ? currentLevel : 0;
     }
+
     insert(p: QuadPoint) {
         // Ignore objects that do not belong in this quad tree
         if (!this.boundary.containsPoint(p))
             return false; // object cannot be added
 
         //check for depth?
-        if (this.boundary.halfDimension < 20) {
+        if (this.boundary.halfDimension < this.minHalfDimension) {
             this.points.push(p);
             return true;
         }
@@ -49,23 +53,25 @@ export class QTree {
             x: this.boundary.center.x - halfDimension,
             y: this.boundary.center.y - halfDimension
         }, halfDimension);
-        this.northWest = new QTree(nwBoundary);
+        this.northWest = new QTree(nwBoundary, this.minHalfDimension, this.currentLevel + 1);
 
         let neBoundary = new AABB({
             x: this.boundary.center.x + halfDimension,
             y: this.boundary.center.y - halfDimension
         }, halfDimension);
-        this.northEast = new QTree(neBoundary);
+        this.northEast = new QTree(neBoundary, this.minHalfDimension, this.currentLevel + 1);
 
         let seBoundary = new AABB({
             x: this.boundary.center.x + halfDimension,
             y: this.boundary.center.y + halfDimension
-        }, halfDimension); this.southEast = new QTree(seBoundary);
+        }, halfDimension);
+        this.southEast = new QTree(seBoundary, this.minHalfDimension, this.currentLevel + 1);
 
         let swBoundary = new AABB({
             x: this.boundary.center.x - halfDimension,
             y: this.boundary.center.y + halfDimension
-        }, halfDimension); this.southWest = new QTree(swBoundary);
+        }, halfDimension);
+        this.southWest = new QTree(swBoundary, this.minHalfDimension, this.currentLevel + 1);
     }
     queryRangeTrajectory(range: AABB) {
         let foundPoints = this.queryRange(range);

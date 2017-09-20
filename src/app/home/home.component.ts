@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit {
 
   constructor(public http: Http) {
     let boundary = new AABB({ x: 50, y: 50 }, 50);
-    this.qTree = new QTree(new AABB({ x: 50, y: 50 }, 50));
+    this.qTree = new QTree(new AABB({ x: 50, y: 50 }, 50), 20);
 
     this.qTree.insert({ x: 24, y: 24, index: 0 });
     this.qTree.insert({ x: 74, y: 74, index: 4 });
