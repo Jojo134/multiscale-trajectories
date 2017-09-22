@@ -6,7 +6,7 @@ import { Component, OnInit, Input, Output, EventEmitter, ElementRef, ViewChild }
   styleUrls: ['./multiselect.component.css']
 })
 export class MultiselectComponent implements OnInit {
-  @ViewChild('multiselect') element: ElementRef
+  @ViewChild('multiselect') element: ElementRef;
   @Input() public items: any[] = [];
   @Output() public selectedItems = new EventEmitter<any[]>();
   public selected: any[] = [];
@@ -19,15 +19,15 @@ export class MultiselectComponent implements OnInit {
 
   toggleMultiSelect(event, val) {
     event.preventDefault();
-    let elem = (event.target as Element).getElementsByTagName('i')[0];
-    if (this.selected.indexOf(val) == -1) {
+    const elem = (event.target as Element).getElementsByTagName('i')[0];
+    if (this.selected.indexOf(val) === -1) {
       this.selected = [...this.selected, val];
-      elem.className = elem.className.replace("fa fa-fw fa-square-o", "fa fa-fw fa-check-square-o");
+      elem.className = elem.className.replace('fa fa-fw fa-square-o', 'fa fa-fw fa-check-square-o');
     } else {
-      elem.className = elem.className.replace("fa fa-fw fa-check-square-o", "fa fa-fw fa-square-o");
-      this.selected = this.selected.filter(elem => {
-        return elem != val;
-      })
+      elem.className = elem.className.replace('fa fa-fw fa-check-square-o', 'fa fa-fw fa-square-o');
+      this.selected = this.selected.filter(element => {
+        return element !== val;
+      });
     }
     this.selectedItems.emit(this.selected);
   }

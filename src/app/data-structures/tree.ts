@@ -1,7 +1,8 @@
-//https://en.wikipedia.org/wiki/Quadtree
+import { center_of_masst } from '../shared/util';
+import { PointType } from './pointType';
+// https://en.wikipedia.org/wiki/Quadtree
 export class QTree {
-    //const QT_NODE_CAPACITY: number = 4;
-    depth: number = 0;
+    depth = 0;
     // Axis-aligned bounding box stored as a center with half-dimensions
     // to represent the boundaries of this quad tree
     boundary: AABB;
@@ -23,24 +24,37 @@ export class QTree {
         this.currentLevel = currentLevel ? currentLevel : 0;
     }
 
+    getPointsForLevel(level: number) {
+        if (level === this.currentLevel) {
+            // return center_of_masst(this.points);
+        } else {
+            return this.getPointsForLevel(level + 1);
+        }
+    }
+
+    insertPointType(p: PointType) {
+        this.insert({ x: p.x, y: p.y, index: p.fixationIndex });
+    }
+
     insert(p: QuadPoint) {
         // Ignore objects that do not belong in this quad tree
-        if (!this.boundary.containsPoint(p))
+        if (!this.boundary.containsPoint(p)) {
             return false; // object cannot be added
-
-        //check for depth?
+        }
+        // check for depth?
         if (this.boundary.halfDimension < this.minHalfDimension) {
             this.points.push(p);
             return true;
         }
         // Otherwise, subdivide and then add the point to whichever node will accept it
-        if (this.northWest == null)
+        if (this.northWest == null) {
             this.subdivide();
+        }
 
-        if (this.northWest.insert(p)) return true;
-        if (this.northEast.insert(p)) return true;
-        if (this.southWest.insert(p)) return true;
-        if (this.southEast.insert(p)) return true;
+        if (this.northWest.insert(p)) { return true; }
+        if (this.northEast.insert(p)) { return true; }
+        if (this.southWest.insert(p)) { return true; }
+        if (this.southEast.insert(p)) { return true; }
 
         // Otherwise, the point cannot be inserted for some unknown reason (this should never happen)
         return false;
@@ -48,44 +62,44 @@ export class QTree {
 
     subdivide() {
         // create four children that fully divide this quad into four quads of equal area
-        let halfDimension = this.boundary.halfDimension / 2
-        let nwBoundary = new AABB({
+        const halfDimension = this.boundary.halfDimension / 2;
+        const nwBoundary = new AABB({
             x: this.boundary.center.x - halfDimension,
             y: this.boundary.center.y - halfDimension
         }, halfDimension);
         this.northWest = new QTree(nwBoundary, this.minHalfDimension, this.currentLevel + 1);
 
-        let neBoundary = new AABB({
+        const neBoundary = new AABB({
             x: this.boundary.center.x + halfDimension,
             y: this.boundary.center.y - halfDimension
         }, halfDimension);
         this.northEast = new QTree(neBoundary, this.minHalfDimension, this.currentLevel + 1);
 
-        let seBoundary = new AABB({
+        const seBoundary = new AABB({
             x: this.boundary.center.x + halfDimension,
             y: this.boundary.center.y + halfDimension
         }, halfDimension);
         this.southEast = new QTree(seBoundary, this.minHalfDimension, this.currentLevel + 1);
 
-        let swBoundary = new AABB({
+        const swBoundary = new AABB({
             x: this.boundary.center.x - halfDimension,
             y: this.boundary.center.y + halfDimension
         }, halfDimension);
         this.southWest = new QTree(swBoundary, this.minHalfDimension, this.currentLevel + 1);
     }
     queryRangeTrajectory(range: AABB) {
-        let foundPoints = this.queryRange(range);
-        let foundSub = []
-        let collect = []
-        collect.push(foundPoints[0])
+        const foundPoints = this.queryRange(range);
+        const foundSub = [];
+        let collect = [];
+        collect.push(foundPoints[0]);
         for (let i = 1; i < foundPoints.length; i++) {
             if (foundPoints[i].index - foundPoints[i - 1].index > 1) {
                 foundSub.push(collect);
                 collect = [];
             }
-            collect.push(foundPoints[i])
+            collect.push(foundPoints[i]);
         }
-        foundSub.push(collect)
+        foundSub.push(collect);
         return foundSub;
     }
 
@@ -105,11 +119,12 @@ export class QTree {
         }
 
         // Terminate here, if there are no children
-        if (this.northWest == null)
+        if (this.northWest == null) {
             return pointsInRange;
+        }
 
         // Otherwise, add the points from the children
-        //could be combined 
+        // could be combined
         pointsInRange = pointsInRange.concat(this.northWest.queryRange(range));
         pointsInRange = pointsInRange.concat(this.northEast.queryRange(range));
         pointsInRange = pointsInRange.concat(this.southWest.queryRange(range));
@@ -154,8 +169,10 @@ export class AABB {
         return false;
     }
     intersectsAABB(other: AABB) {
-        return Math.max(this.center.x - this.halfDimension, other.center.x - other.halfDimension) < Math.min(this.center.x + this.halfDimension, other.center.x + other.halfDimension) &&
-            Math.max(this.center.y - this.halfDimension, other.center.y - other.halfDimension) < Math.min(this.center.x + this.halfDimension, other.center.y + other.halfDimension);
+        return Math.max(this.center.x - this.halfDimension, other.center.x - other.halfDimension)
+            < Math.min(this.center.x + this.halfDimension, other.center.x + other.halfDimension)
+            && Math.max(this.center.y - this.halfDimension, other.center.y - other.halfDimension)
+            < Math.min(this.center.x + this.halfDimension, other.center.y + other.halfDimension);
 
     }
 }

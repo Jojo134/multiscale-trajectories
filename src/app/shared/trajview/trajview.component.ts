@@ -35,10 +35,10 @@ export class TrajviewComponent implements OnInit, OnChanges {
   }
 
   createChart() {
-    let element = this.chartContainer.nativeElement;
+    const element = this.chartContainer.nativeElement;
     this.width = element.offsetWidth - this.margin.left - this.margin.right;
     this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
-    let svg = d3.select(element).append('svg')
+    const svg = d3.select(element).append('svg')
       .attr('width', element.offsetWidth)
       .attr('height', element.offsetHeight);
 
@@ -48,8 +48,8 @@ export class TrajviewComponent implements OnInit, OnChanges {
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
     // define X & Y domains
-    let xDomain = this.data.map(d => d[0]);
-    let yDomain = [0, d3.max(this.data, d => d[1])];
+    const xDomain = this.data.map(d => d[0]);
+    const yDomain = [0, d3.max(this.data, d => d[1])];
 
     // create scales
     this.xScale = d3.scaleBand().padding(0.1).domain(xDomain).rangeRound([0, this.width]);
@@ -77,7 +77,7 @@ export class TrajviewComponent implements OnInit, OnChanges {
     this.xAxis.transition().call(d3.axisBottom(this.xScale));
     this.yAxis.transition().call(d3.axisLeft(this.yScale));
 
-    let update = this.chart.selectAll('.bar')
+    const update = this.chart.selectAll('.bar')
       .data(this.data);
 
     // remove exiting bars
