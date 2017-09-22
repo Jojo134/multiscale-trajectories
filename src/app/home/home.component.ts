@@ -61,8 +61,11 @@ export class HomeComponent implements OnInit {
     // console.log(this.qTree.insert({ x: 120, y: 120, index: }));
 
     console.log(this.qTree);
-    console.log(this.qTree.queryRange(boundary));
-    console.log(this.qTree.queryRangeTrajectory(boundary));
+    // console.log(this.qTree.queryRange(boundary));
+    // console.log('ragnequery traj', this.qTree.queryRangeTrajectory(boundary));
+    console.log('level0', this.qTree.getPointsForLevel(0));
+    console.log('level1', this.qTree.getPointsForLevel(1));
+    console.log('level2', this.qTree.getPointsForLevel(2));
   }
 
   filterData() {
@@ -72,23 +75,26 @@ export class HomeComponent implements OnInit {
       return this.selected_participants.filter(e => e.name === traj.participant).length > 0
         || this.selected_stimuli.filter(e => e.name === traj.stimulus).length > 0;
     });
-    console.log(this.filteredFixData);
+    // console.log(this.filteredFixData);
     this.removeOutliers();
   }
 
   removeOutliers() {
     this.filteredFixData = this.filteredFixData.filter(traj => {
       const resolutionname = traj.stimulus.split('_')[1];
-      const data_resolution = this.resolutions.filter(res => res.city === resolutionname);
+      const data_resolution = this.retrieveDimension(resolutionname);
       return traj.points.every(p => {
         return p.x > 0 && p.x < data_resolution[0].width
           && p.y > 0 && p.y < data_resolution[0].height;
       });
     });
   }
+  retrieveDimension(resolutionname: string) {
+    return this.resolutions.filter(res => res.city === resolutionname);
+  }
   getTrajectories() {
     d3.tsv(this.filename, (err, data) => {
-      console.log(data);
+      // console.log(data);
       const users = new Set(Array.from(data, o => o.user));
       this.participants = Array.from(users).map((u, index) => ({ name: u, id: index }));
       const StimuliName = new Set(Array.from(data, o => o.StimuliName));
@@ -100,7 +106,9 @@ export class HomeComponent implements OnInit {
             return d.StimuliName === stimu && d.user === user;
           });
           if (result.length) {
-            const nTrajectory = new Trajectory();
+            const resolutionname = stimu.split('_')[1];
+            const currentres = this.retrieveDimension(resolutionname);
+            const nTrajectory = new Trajectory(currentres[0].height, currentres[0].width);
             nTrajectory.participant = user;
             nTrajectory.stimulus = stimu;
             nTrajectory.color = this.stringToColor.next(user + stimu);
@@ -118,7 +126,7 @@ export class HomeComponent implements OnInit {
           }
         });
       });
-      console.log(this.fix_data);
+      //  console.log(this.fix_data);
     });
   }
 

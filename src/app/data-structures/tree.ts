@@ -1,5 +1,7 @@
 import { center_of_masst } from '../shared/util';
 import { PointType } from './pointType';
+import * as _ from 'lodash';
+
 // https://en.wikipedia.org/wiki/Quadtree
 export class QTree {
     depth = 0;
@@ -24,11 +26,24 @@ export class QTree {
         this.currentLevel = currentLevel ? currentLevel : 0;
     }
 
-    getPointsForLevel(level: number) {
-        if (level === this.currentLevel) {
-            // return center_of_masst(this.points);
+    getPoint(): PointType {
+        return center_of_masst(_.flatten(this.queryRangeTrajectory(this.boundary)));
+    }
+
+    getPointsForLevel(level: number): PointType[] {
+        if (this.currentLevel < level) {
+            if (!this.northWest) {
+                return;
+            }
+            return ([].concat(this.northWest.getPointsForLevel(level),
+                this.northEast.getPointsForLevel(level),
+                this.southEast.getPointsForLevel(level),
+                this.southWest.getPointsForLevel(level)));
+
         } else {
-            return this.getPointsForLevel(level + 1);
+            console.log(level, [].concat(this.queryRangeTrajectory(this.boundary)));
+            console.log('summedPointforQuad', this.getPoint());
+            return [].concat(this.getPoint());
         }
     }
 
