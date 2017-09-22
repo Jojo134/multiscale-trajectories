@@ -3,5 +3,5 @@ export class PointType {
     y: number;
     duration?: number;
     timestamp?: number;
-    fixationIndex?: number;
+    index?: number;
 }

@@ -9,7 +9,7 @@ export class QTree {
     minHalfDimension: number;
     currentLevel: number;
     // Points in this quad tree node
-    points: Array<QuadPoint> = [];
+    points: Array<PointType> = [];
 
     // Children
     northWest: QTree;
@@ -32,11 +32,7 @@ export class QTree {
         }
     }
 
-    insertPointType(p: PointType) {
-        this.insert({ x: p.x, y: p.y, index: p.fixationIndex });
-    }
-
-    insert(p: QuadPoint) {
+    insert(p: PointType) {
         // Ignore objects that do not belong in this quad tree
         if (!this.boundary.containsPoint(p)) {
             return false; // object cannot be added
@@ -103,9 +99,9 @@ export class QTree {
         return foundSub;
     }
 
-    queryRange(range: AABB): Array<QuadPoint> {
+    queryRange(range: AABB): Array<PointType> {
         // Prepare an array of results
-        let pointsInRange: Array<QuadPoint> = [];
+        let pointsInRange: Array<PointType> = [];
 
         // Automatically abort if the range does not intersect this quad
         if (!this.boundary.intersectsAABB(range)) {
@@ -133,35 +129,29 @@ export class QTree {
     }
 }
 
-export class QuadPoint {
-    x: number;
-    y: number;
-    index?: number;
-}
-
 export class AABB {
-    center: QuadPoint;
+    center: PointType;
     halfDimension: number;
 
-    constructor(center: QuadPoint, halfDimension: number) {
+    constructor(center: PointType, halfDimension: number) {
         this.center = center;
         this.halfDimension = halfDimension;
     }
 
-    public containsPoint(point: QuadPoint) {
+    public containsPoint(point: PointType) {
         if (this.inYRange(point) && this.inXRange(point)) {
             return true;
         }
         return false;
     }
-    private inXRange(point: QuadPoint) {
+    private inXRange(point: PointType) {
         if ((this.center.x + this.halfDimension) > point.x
             && (this.center.x - this.halfDimension) < point.x) {
             return true;
         }
         return false;
     }
-    private inYRange(point: QuadPoint) {
+    private inYRange(point: PointType) {
         if ((this.center.y + this.halfDimension) > point.y
             && (this.center.y - this.halfDimension) < point.y) {
             return true;
