@@ -78,10 +78,13 @@ export class HomeComponent implements OnInit {
     // console.log(this.filteredFixData);
     this.removeOutliers();
   }
-
+  stimulNameToResName(stimuName: string) {
+    const stimuSplit = stimuName.split('_');
+    return stimuSplit.slice(1, stimuSplit.length - 1).join(' ');
+  }
   removeOutliers() {
     this.filteredFixData = this.filteredFixData.filter(traj => {
-      const resolutionname = traj.stimulus.split('_')[1];
+      const resolutionname = this.stimulNameToResName(traj.stimulus);
       const data_resolution = this.retrieveDimension(resolutionname);
       return traj.points.every(p => {
         return p.x > 0 && p.x < data_resolution[0].width
@@ -106,7 +109,7 @@ export class HomeComponent implements OnInit {
             return d.StimuliName === stimu && d.user === user;
           });
           if (result.length) {
-            const resolutionname = stimu.split('_')[1];
+            const resolutionname = this.stimulNameToResName(stimu);
             const currentres = this.retrieveDimension(resolutionname);
             const nTrajectory = new Trajectory(currentres[0].height, currentres[0].width);
             nTrajectory.participant = user;
