@@ -1,7 +1,7 @@
 <h3>Bar Chart</h3>
 <div class="container-fluid">
-  <div class="container row">
-    <div class="container col-3">
+  <div class="row">
+    <div class="col-sm-3">
       <p>file upload</p>
       <div class="row">
         <label for="minSize">minimum quad size</label>
@@ -19,6 +19,6 @@
 
       <button (click)="filterData()">Filter</button>
     </div>
-    <app-trajview1 class="container col-9" *ngIf="filteredFixData.length !== 0" [data]="filteredFixData"></app-trajview1>
+    <app-trajview1 class="col-sm-9" *ngIf="filteredFixData.length !== 0" [data]="filteredFixData"></app-trajview1>
   </div>
 </div>

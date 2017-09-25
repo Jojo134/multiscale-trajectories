@@ -81,6 +81,8 @@ export class HomeComponent implements OnInit {
           points: traj.qTree.getPointsForLevel(this.someRange).filter(n => n).sort((a, b) => a.timestamp - b.timestamp)
         };
       });
+    } else {
+      this.filteredFixData = prefilteredFixData;
     }
     console.log(this.filteredFixData);
     this.removeOutliers();
