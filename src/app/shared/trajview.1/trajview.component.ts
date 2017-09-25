@@ -50,7 +50,7 @@ export class Trajview1Component implements OnInit, OnChanges {
     this.height = 1200;
 
     // set the ranges
-    const x = d3.scaleTime().range([0, this.width]);
+    const x = d3.scaleLinear().range([0, this.width]);
     const y = d3.scaleLinear().range([this.height, 0]);
 
     this.svg = d3.select(element).append('svg')
