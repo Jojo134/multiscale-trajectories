@@ -3,16 +3,20 @@
   <div class="container row">
     <div class="container col-3">
       <p>file upload</p>
-      <nouislider class="slider-style" [tooltips]="[true]" [step]="1" [connect]="true" [min]="1" [max]="8" [(ngModel)]="someRange"></nouislider>
       <div class="row">
-        <label for="minSize">minimum size</label>
-        <input readonly id="minSize" type="number">
+        <label for="minSize">minimum quad size</label>
+        <input readonly [value]="minQuadsize" id="minSize" type="number">
       </div>
+      <hr>
       <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
       <hr>
       <hr>
       <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
       <!--<app-trajview class="offset-3 col-9" *ngIf="chartData" [data]="chartData"></app-trajview>-->
+      <md-checkbox [(ngModel)]="viewAsQuadtree">View as Quadtree</md-checkbox>
+      {{ viewAsQuadtree}}
+      <nouislider class="slider-style" [tooltips]="[true]" [step]="1" [connect]="true" [min]="1" [max]="8" [(ngModel)]="someRange"></nouislider>
+
       <button (click)="filterData()">Filter</button>
     </div>
     <app-trajview1 class="container col-9" *ngIf="filteredFixData.length !== 0" [data]="filteredFixData"></app-trajview1>

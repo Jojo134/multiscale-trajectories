@@ -10,4 +10,13 @@ export class Trajectory {
         const centerCoord = Math.ceil(Math.max(maxHeight, maxWidth) / 2);
         this.qTree = new QTree(new AABB({ x: centerCoord, y: centerCoord }, centerCoord), 20);
     }
+    genQtree() {
+        this.points.forEach(p => this.qTree.insert(p));
+    }
+}
+export class TrajectoryViewType {
+    stimulus: string;
+    participant: string;
+    color: string;
+    points: Array<PointType>;
 }

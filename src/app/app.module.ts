@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { MdButtonModule, MdCheckboxModule } from '@angular/material';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { TrajviewComponent } from './shared/trajview/trajview.component';
@@ -20,7 +22,7 @@ import { NouisliderModule } from 'ng2-nouislider/src/nouislider';
     MultiselectComponent
   ],
   imports: [
-    BrowserModule, NouisliderModule,
+    BrowserModule, NouisliderModule, MdCheckboxModule, BrowserAnimationsModule,
     FormsModule, HttpModule, routing
   ],
   providers: [appRoutingProviders],

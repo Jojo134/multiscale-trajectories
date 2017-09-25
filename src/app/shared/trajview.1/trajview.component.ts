@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
-import { Trajectory } from '../../data-structures';
+import { Trajectory, TrajectoryViewType } from '../../data-structures';
 
 @Component({
   selector: 'app-trajview1',
@@ -35,7 +35,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    if (this.chart) {
+    if (this.svg) {
       this.updateChart();
     }
   }

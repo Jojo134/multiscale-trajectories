@@ -4,7 +4,7 @@ import * as Baby from 'babyparse';
 import 'rxjs/Rx';
 import { Observable } from 'rxjs/Observable';
 import * as d3 from 'd3';
-import { Trajectory, QTree, AABB } from '../data-structures';
+import { Trajectory, TrajectoryViewType, QTree, AABB } from '../data-structures';
 
 @Component({
   selector: 'app-home',
@@ -42,10 +42,12 @@ export class HomeComponent implements OnInit {
   someRange = 5;
   participants = [];
   stimuli = [];
+  viewAsQuadtree: boolean;
   selected_participants = Array<{ name: string, id: number }>();
   selected_stimuli = Array<{ name: string, id: number }>();
+  filenameall = 'assets/all_fixation_data_cleaned_up.csv';
   filename = 'assets/small_fix_data_cleaned.csv';
-  filteredFixData: Array<Trajectory> = [];
+  filteredFixData: Array<TrajectoryViewType> = [];
   fix_data: Array<Trajectory> = [];
   resolutions: Array<{ city: string, height: number, width: number }> = [];
   qTree: QTree;
@@ -60,24 +62,30 @@ export class HomeComponent implements OnInit {
     this.qTree.insert({ x: 74, y: 74, index: 6 });
     // console.log(this.qTree.insert({ x: 120, y: 120, index: }));
 
-    console.log(this.qTree);
+    // console.log(this.qTree);
     // console.log(this.qTree.queryRange(boundary));
     // console.log('ragnequery traj', this.qTree.queryRangeTrajectory(boundary));
-    console.log('level0', this.qTree.getPointsForLevel(0));
-    console.log('level1', this.qTree.getPointsForLevel(1));
-    console.log('level2', this.qTree.getPointsForLevel(2));
   }
 
   filterData() {
     this.filteredFixData = [];
-    this.filteredFixData = this.fix_data.filter(traj => {
-
+    const prefilteredFixData = this.fix_data.filter(traj => {
       return this.selected_participants.filter(e => e.name === traj.participant).length > 0
         || this.selected_stimuli.filter(e => e.name === traj.stimulus).length > 0;
     });
-    // console.log(this.filteredFixData);
+    if (this.viewAsQuadtree) {
+      console.log('going quad')
+      this.filteredFixData = prefilteredFixData.map(traj => {
+        return {
+          stimulus: traj.stimulus, participant: traj.participant, color: traj.color,
+          points: traj.qTree.getPointsForLevel(this.someRange).filter(n => n).sort((a, b) => a.timestamp - b.timestamp)
+        };
+      });
+    }
+    console.log(this.filteredFixData);
     this.removeOutliers();
   }
+
   stimulNameToResName(stimuName: string) {
     const stimuSplit = stimuName.split('_');
     return stimuSplit.slice(1, stimuSplit.length - 1).join(' ');
@@ -114,7 +122,7 @@ export class HomeComponent implements OnInit {
             const nTrajectory = new Trajectory(currentres[0].height, currentres[0].width);
             nTrajectory.participant = user;
             nTrajectory.stimulus = stimu;
-            nTrajectory.color = this.stringToColor.next(user + stimu);
+            nTrajectory.color = this.stringToColor.next(user);
             nTrajectory.points = result.map(d => {
               return {
                 x: +d.MappedFixationPointX,
@@ -125,6 +133,7 @@ export class HomeComponent implements OnInit {
               };
             });
             nTrajectory.points = nTrajectory.points.sort((a, b) => a.timestamp - b.timestamp);
+            nTrajectory.genQtree();
             this.fix_data.push(nTrajectory);
           }
         });
@@ -143,12 +152,12 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     // give everything a chance to get loaded before starting the animation to reduce choppiness
-    setTimeout(() => {
-      this.generateData();
+    // setTimeout(() => {
+    // this.generateData();
 
-      // change the data periodically
-      setInterval(() => this.generateData(), 3000);
-    }, 1000);
+    // change the data periodically
+    //  setInterval(() => this.generateData(), 3000);
+    // }, 1000);
     this.getResolution();
     this.getTrajectories();
     // d3.queue().defer(this.getResolution).await(this.getTrajectories)

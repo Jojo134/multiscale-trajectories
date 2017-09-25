@@ -39,10 +39,7 @@ export class QTree {
                 this.northEast.getPointsForLevel(level),
                 this.southEast.getPointsForLevel(level),
                 this.southWest.getPointsForLevel(level)));
-
         } else {
-            console.log(level, [].concat(this.queryRangeTrajectory(this.boundary)));
-            console.log('summedPointforQuad', this.getPoint());
             return [].concat(this.getPoint());
         }
     }
