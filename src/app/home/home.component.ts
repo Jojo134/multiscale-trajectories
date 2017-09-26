@@ -131,7 +131,7 @@ export class HomeComponent implements OnInit {
                 y: +d.MappedFixationPointY,
                 duration: +d.FixationDuration,
                 timestamp: +d.Timestamp,
-                fixationIndex: +d.FixationIndex
+                index: +d.FixationIndex
               };
             });
             nTrajectory.points = nTrajectory.points.sort((a, b) => a.timestamp - b.timestamp);
@@ -168,13 +168,13 @@ export class HomeComponent implements OnInit {
   filterChangeParticipant(selected: any[]) {
     console.log(selected);
     this.selected_participants = selected;
-    // this.filterData();
+    this.filterData();
   }
 
   filterChangeStimuli(selected: any[]) {
     console.log(selected);
     this.selected_stimuli = selected;
-    // this.filterData();
+    this.filterData();
   }
 
   generateData() {

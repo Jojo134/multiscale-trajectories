@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 
 // https://en.wikipedia.org/wiki/Quadtree
 export class QTree {
-    depth = 0;
     // Axis-aligned bounding box stored as a center with half-dimensions
     // to represent the boundaries of this quad tree
     boundary: AABB;
@@ -26,8 +25,8 @@ export class QTree {
         this.currentLevel = currentLevel ? currentLevel : 0;
     }
 
-    getPoint(): PointType {
-        return center_of_masst(_.flatten(this.queryRangeTrajectory(this.boundary)));
+    getPoints(): PointType[] {
+        return this.queryRangeTrajectory(this.boundary).map(e => e.sort((a, b) => a.timestamp - b.timestamp)).map(center_of_masst);
     }
 
     getPointsForLevel(level: number): PointType[] {
@@ -40,7 +39,7 @@ export class QTree {
                 this.southEast.getPointsForLevel(level),
                 this.southWest.getPointsForLevel(level)));
         } else {
-            return [].concat(this.getPoint());
+            return [].concat(this.getPoints());
         }
     }
 
@@ -96,7 +95,7 @@ export class QTree {
         this.southWest = new QTree(swBoundary, this.minHalfDimension, this.currentLevel + 1);
     }
     queryRangeTrajectory(range: AABB) {
-        const foundPoints = this.queryRange(range);
+        const foundPoints = this.queryRange(range).sort((a, b) => a.timestamp - b.timestamp);
         const foundSub = [];
         let collect = [];
         collect.push(foundPoints[0]);
