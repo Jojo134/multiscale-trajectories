@@ -38,8 +38,9 @@ export class MultiMatch {
     compare(traj1: PointType[], traj2: PointType[]) {
         this.traj1 = traj1;
         this.traj2 = traj2;
-        this.vectors1 = this.createVectors(traj1);
-        this.vectors2 = this.createVectors(traj2);
+        this.vectors1 = this.createVectors(this.traj1);
+        this.vectors2 = this.createVectors(this.traj2);
+        this.computeSimilarityMatrix();
     }
     createVectors(traj: PointType[]): Vector[] {
         const vectorList = [];
@@ -49,17 +50,22 @@ export class MultiMatch {
         return vectorList;
     }
     computeSimilarityMatrix() {
+        this.simMatrix = [];
         for (let i = 0; i < this.vectors1.length; i++) {
+            this.simMatrix[i] = [];
             for (let j = 0; j < this.vectors2.length; j++) {
-                this.simMatrix[i][j] = this.computeAngle(this.vectors1[i], this.vectors2[j]);
+                this.simMatrix[i][j] = this.rad2degree(this.computeAngle(this.vectors1[i], this.vectors2[j]));
             }
         }
+        console.log(this.simMatrix)
     }
 
     computeAngle(v1: Vector, v2: Vector) {
         return Math.acos(this.dotP(this.normalizeV(v1), this.normalizeV(v2)));
     }
-
+    rad2degree(radians) {
+        return radians * (180 / Math.PI);
+    }
     shape(traj1: PointType[], traj2: PointType[]) {
 
     }
@@ -71,7 +77,9 @@ export class MultiMatch {
     direction(traj1: PointType[], traj2: PointType[]) {
 
     }
-
+    trajectoryDirection(traj: Vector[]) {
+        traj.reduce((sum, c) => sum = this.addV(sum, c));
+    }
     position(traj1: PointType[], traj2: PointType[]) {
 
     }
@@ -87,7 +95,9 @@ export class MultiMatch {
     multV(v: Vector, factor): Vector {
         return { x: factor * v.x, y: factor * v.y };
     }
-
+    addV(v0, v1) {
+        return { x: v0.x + v1.x, y: v0.y + v1.y, z: v0.z + v1.z };
+    }
     normalizeV(v: Vector) {
         const factor = this.vectorLength(v);
         return this.multV(v, (1 / factor));
@@ -97,3 +107,40 @@ export class MultiMatch {
         return Math.sqrt(v1.x * v1.x + v1.y * v1.y);
     }
 }
+export const testTraj1: PointType[] = [
+    { x: 1151, y: 458, duration: 250, timestamp: 2586, index: 9 },
+    { x: 1371, y: 316, duration: 150, timestamp: 2836, index: 10 },
+    { x: 1342, y: 287, duration: 283, timestamp: 2986, index: 11 },
+    { x: 762, y: 303, duration: 433, timestamp: 3269, index: 12 },
+    { x: 624, y: 297, duration: 183, timestamp: 3702, index: 13 },
+    { x: 712, y: 303, duration: 333, timestamp: 3885, index: 14 },
+    { x: 753, y: 293, duration: 300, timestamp: 4218, index: 15 },
+    { x: 804, y: 284, duration: 516, timestamp: 4518, index: 16 },
+    { x: 724, y: 305, duration: 183, timestamp: 5035, index: 17 },
+    { x: 652, y: 703, duration: 250, timestamp: 5218, index: 18 },
+    { x: 495, y: 855, duration: 183, timestamp: 5468, index: 19 },
+    { x: 425, y: 976, duration: 550, timestamp: 5651, index: 20 },
+    { x: 620, y: 739, duration: 150, timestamp: 6200, index: 21 },
+    { x: 601, y: 674, duration: 333, timestamp: 6517, index: 22 }];
+export const testTraj2: PointType[] = [
+    { x: 670, y: 450, duration: 283, timestamp: 559960, index: 1614 },
+    { x: 1355, y: 249, duration: 300, timestamp: 560243, index: 1615 },
+    { x: 511, y: 791, duration: 283, timestamp: 560543, index: 1616 },
+    { x: 495, y: 840, duration: 167, timestamp: 560826, index: 1617 },
+    { x: 467, y: 944, duration: 133, timestamp: 560993, index: 1618 },
+    { x: 707, y: 418, duration: 233, timestamp: 561126, index: 1619 },
+    { x: 765, y: 224, duration: 183, timestamp: 561359, index: 1620 },
+    { x: 1244, y: 204, duration: 233, timestamp: 561542, index: 1621 },
+    { x: 1364, y: 279, duration: 416, timestamp: 561776, index: 1622 },
+    { x: 421, y: 993, duration: 533, timestamp: 562192, index: 1623 },
+    { x: 356, y: 975, duration: 216, timestamp: 562725, index: 1624 },
+    { x: 1409, y: 186, duration: 233, timestamp: 562941, index: 1625 },
+    { x: 1368, y: 290, duration: 233, timestamp: 563175, index: 1626 },
+    { x: 858, y: 270, duration: 250, timestamp: 563408, index: 1627 },
+    { x: 707, y: 280, duration: 283, timestamp: 563658, index: 1628 },
+    { x: 824, y: 244, duration: 200, timestamp: 563941, index: 1629 },
+    { x: 1053, y: 243, duration: 283, timestamp: 564141, index: 1630 },
+    { x: 1265, y: 248, duration: 233, timestamp: 564424, index: 1631 },
+    { x: 597, y: 739, duration: 300, timestamp: 564657, index: 1632 },
+    { x: 447, y: 984, duration: 583, timestamp: 564957, index: 1633 }];
+
