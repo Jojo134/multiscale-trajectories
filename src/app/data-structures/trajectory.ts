@@ -6,11 +6,11 @@ export class Trajectory {
     color: string;
     points: Array<PointType>;
     qTree: QTree;
-    constructor(maxHeight: number, maxWidth: number) {
-        const centerCoord = Math.ceil(Math.max(maxHeight, maxWidth) / 2);
-        this.qTree = new QTree(new AABB({ x: centerCoord, y: centerCoord }, centerCoord), 20);
+    constructor() {
     }
-    genQtree() {
+    genQtree(maxHeight: number, maxWidth: number, minHalfDimension) {
+        const centerCoord = Math.ceil(Math.max(maxHeight, maxWidth) / 2);
+        this.qTree = new QTree(new AABB({ x: centerCoord, y: centerCoord }, centerCoord), minHalfDimension);
         this.points.forEach(p => this.qTree.insert(p));
     }
 }

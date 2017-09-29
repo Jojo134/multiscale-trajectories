@@ -121,7 +121,7 @@ export class HomeComponent implements OnInit {
           if (result.length) {
             const resolutionname = this.stimulNameToResName(stimu);
             const currentres = this.retrieveDimension(resolutionname);
-            const nTrajectory = new Trajectory(currentres[0].height, currentres[0].width);
+            const nTrajectory = new Trajectory();
             nTrajectory.participant = user;
             nTrajectory.stimulus = stimu;
             nTrajectory.color = this.stringToColor.next(user);
@@ -135,7 +135,7 @@ export class HomeComponent implements OnInit {
               };
             });
             nTrajectory.points = nTrajectory.points.sort((a, b) => a.timestamp - b.timestamp);
-            nTrajectory.genQtree();
+            nTrajectory.genQtree(currentres[0].height, currentres[0].width, 20);
             this.fix_data.push(nTrajectory);
           }
         });
