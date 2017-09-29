@@ -18,9 +18,10 @@ export function center_of_masst(points: PointType[]): PointType {
     }
 }
 
-export function eudclid_distance(p1: PointType, p2: PointType) {
+export function euclid_distance(p1: PointType, p2: PointType) {
     return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 }
+
 class Vector {
     x: number;
     y: number;
@@ -29,6 +30,7 @@ class Vector {
         this.y = y;
     }
 }
+
 export class MultiMatch {
     simMatrix: number[][];
     traj1: PointType[];
@@ -57,9 +59,23 @@ export class MultiMatch {
                 this.simMatrix[i][j] = this.rad2degree(this.computeAngle(this.vectors1[i], this.vectors2[j]));
             }
         }
-        console.log(this.simMatrix)
+        console.log(this.simMatrix);
     }
-
+    getPathThroughSimMatrix(m: number[][]) {
+        /* const d = new Map()
+        * d.set('A', 2)
+        * d.set('B', 8)
+        *
+        * route.addNode('D', d)*/
+        const graph = new Dijkstra();
+        for (let i = 1; i < m.length; i++) {
+            for (let j = 1; j < m[i].length; j++) {
+                const d = new Map();
+                d.set('' + i + j, m[i][j])
+                graph.addNode('' + (i - 1) + (j - 1), d);
+            }
+        }
+    }
     computeAngle(v1: Vector, v2: Vector) {
         return Math.acos(this.dotP(this.normalizeV(v1), this.normalizeV(v2)));
     }
