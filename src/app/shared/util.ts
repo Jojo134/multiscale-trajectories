@@ -63,18 +63,6 @@ export class MultiMatch {
         this.getPathThroughSimMatrix(this.simMatrix);
     }
     getPathThroughSimMatrix(m: number[][]) {
-        /* const d = new Map()
-        * d.set('A', 2)
-        * d.set('B', 8)
-        *
-        * route.addNode('D', d)*/
-        let d = new Map();
-        for (let i = 1; i < m.length; i++) {
-            for (let j = 1; j < m[i].length; j++) {
-                d.set('' + i + j, m[i][j]);
-                d.set('' + (i - 1) + (j - 1), d);
-            }
-        }
         const adjlist = new Map<string, { target: string, weight: number }[]>();
         for (let i = 0; i < m.length - 1; i++) {
             for (let j = 0; j < m[i].length - 1; j++) {
@@ -107,7 +95,7 @@ export class MultiMatch {
         }
         console.log(adjlist.size);
         console.log(adjlist.get('v0 0'));
-        console.log(adjlist.get('v10 10'))
+        console.log(adjlist.get('v10 10'));
         console.log('length', m.length, m[0].length);
         //console.log(d.size)
     }
