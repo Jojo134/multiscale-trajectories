@@ -79,27 +79,27 @@ export class MultiMatch {
         for (let i = 0; i < m.length - 1; i++) {
             for (let j = 0; j < m[i].length - 1; j++) {
                 adjlist['v' + i + ' ' + j] = [];
-                let list = [];
+                const list = [];
                 if (i < m.length - 2 && j < m[i].length - 2) {
                     // non border
                     list.push(
-                        { target: 'v' + i + 1 + ' ' + j, weight: m[i + 1][j] },
-                        { target: 'v' + i + 1 + ' ' + j + 1, weight: m[i + 1][j + 1] },
-                        { target: 'v' + i + ' ' + j + 1, weight: m[i][j + 1] });
+                        { target: 'v' + (i + 1) + ' ' + j, weight: m[i + 1][j] },
+                        { target: 'v' + (i + 1) + ' ' + (j + 1), weight: m[i + 1][j + 1] },
+                        { target: 'v' + i + ' ' + (j + 1), weight: m[i][j + 1] });
                     adjlist.set('v' + i + ' ' + j, list);
                 }
                 if (i === m.length - 2 && j < m[i].length - 2) {
                     // bottom border
                     list.push(
-                        { target: 'v' + i + 1 + ' ' + j, weight: m[i + 1][j] },
-                        { target: 'v' + i + 1 + ' ' + j + 1, weight: m[i + 1][j + 1] });
+                        { target: 'v' + (i + 1) + ' ' + j, weight: m[i + 1][j] },
+                        { target: 'v' + (i + 1) + ' ' + (j + 1), weight: m[i + 1][j + 1] });
                     adjlist.set('v' + i + ' ' + j, list);
                 }
                 if (i < m.length - 2 && j === m[i].length - 2) {
                     // bottom border
                     list.push(
-                        { target: 'v' + i + ' ' + j + 1, weight: m[i][j + 1] },
-                        { target: 'v' + i + 1 + ' ' + j + 1, weight: m[i + 1][j + 1] });
+                        { target: 'v' + i + ' ' + (j + 1), weight: m[i][j + 1] },
+                        { target: 'v' + (i + 1) + ' ' + (j + 1), weight: m[i + 1][j + 1] });
 
                     adjlist.set('v' + i + ' ' + j, list);
                 }
@@ -107,6 +107,7 @@ export class MultiMatch {
         }
         console.log(adjlist.size);
         console.log(adjlist.get('v0 0'));
+        console.log(adjlist.get('v10 10'))
         console.log('length', m.length, m[0].length);
         //console.log(d.size)
     }
