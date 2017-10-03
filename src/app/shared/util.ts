@@ -1,5 +1,5 @@
 import { PointType } from '../data-structures';
-import * as Dijkstra from 'node-dijkstra';
+import * as Graph from 'node-dijkstra';
 export function center_of_masst(points: PointType[]): PointType {
     if (!points.includes(undefined)) {
         const summedPoints = points.reduce((sum, point) => {
@@ -59,7 +59,8 @@ export class MultiMatch {
                 this.simMatrix[i][j] = this.rad2degree(this.computeAngle(this.vectors1[i], this.vectors2[j]));
             }
         }
-        console.log(this.simMatrix);
+        //console.log(this.simMatrix);
+        this.getPathThroughSimMatrix(this.simMatrix);
     }
     getPathThroughSimMatrix(m: number[][]) {
         /* const d = new Map()
@@ -67,15 +68,49 @@ export class MultiMatch {
         * d.set('B', 8)
         *
         * route.addNode('D', d)*/
-        const graph = new Dijkstra();
+        let d = new Map();
         for (let i = 1; i < m.length; i++) {
             for (let j = 1; j < m[i].length; j++) {
-                const d = new Map();
-                d.set('' + i + j, m[i][j])
-                graph.addNode('' + (i - 1) + (j - 1), d);
+                d.set('' + i + j, m[i][j]);
+                d.set('' + (i - 1) + (j - 1), d);
             }
         }
+        let adjlist: { [source: string]: any[] } = {};
+        for (let i = 0; i < m.length - 1; i++) {
+            for (let j = 0; j < m[i].length - 1; j++) {
+                adjlist['v' + i + ' ' + j] = [];
+                let list = [];
+                if (i < m.length - 2 && j < m[i].length - 2) {
+                    // non border
+                    list.push(
+                        { target: 'v' + i + 1 + ' ' + j, weight: m[i + 1][j] },
+                        { target: 'v' + i + 1 + ' ' + j + 1, weight: m[i + 1][j + 1] },
+                        { target: 'v' + i + ' ' + j + 1, weight: m[i][j + 1] });
+                    adjlist['v' + i + ' ' + j].push(list);
+                }
+                if (i === m.length - 2 && j < m[i].length - 2) {
+                    // bottom border
+                    list.push(
+                        { target: 'v' + i + 1 + ' ' + j, weight: m[i + 1][j] },
+                        { target: 'v' + i + 1 + ' ' + j + 1, weight: m[i + 1][j + 1] });
+                    adjlist['v' + i + ' ' + j].push(list);
+                }
+                if (i < m.length - 2 && j === m[i].length - 2) {
+                    // bottom border
+                    list.push(
+                        { target: 'v' + i + ' ' + j + 1, weight: m[i][j + 1] },
+                        { target: 'v' + i + 1 + ' ' + j + 1, weight: m[i + 1][j + 1] });
+
+                    adjlist['v' + i + ' ' + j].push(list);
+                }
+            }
+        }
+        console.log(adjlist.length);
+        console.log(JSON.stringify(adjlist['v0 0']))
+        console.log('length', m.length, m[0].length);
+        //console.log(d.size)
     }
+
     computeAngle(v1: Vector, v2: Vector) {
         return Math.acos(this.dotP(this.normalizeV(v1), this.normalizeV(v2)));
     }
@@ -91,7 +126,8 @@ export class MultiMatch {
     }
 
     direction(traj1: PointType[], traj2: PointType[]) {
-
+        console.log('direction1', this.vectors1.reduce((sum, v) => this.addV(sum, v)));
+        console.log('direction2', this.vectors2.reduce((sum, v) => this.addV(sum, v)));
     }
     trajectoryDirection(traj: Vector[]) {
         traj.reduce((sum, c) => sum = this.addV(sum, c));
