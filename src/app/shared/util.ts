@@ -75,7 +75,7 @@ export class MultiMatch {
                 d.set('' + (i - 1) + (j - 1), d);
             }
         }
-        let adjlist: { [source: string]: any[] } = {};
+        const adjlist = new Map<string, { target: string, weight: number }[]>();
         for (let i = 0; i < m.length - 1; i++) {
             for (let j = 0; j < m[i].length - 1; j++) {
                 adjlist['v' + i + ' ' + j] = [];
@@ -86,14 +86,14 @@ export class MultiMatch {
                         { target: 'v' + i + 1 + ' ' + j, weight: m[i + 1][j] },
                         { target: 'v' + i + 1 + ' ' + j + 1, weight: m[i + 1][j + 1] },
                         { target: 'v' + i + ' ' + j + 1, weight: m[i][j + 1] });
-                    adjlist['v' + i + ' ' + j].push(list);
+                    adjlist.set('v' + i + ' ' + j, list);
                 }
                 if (i === m.length - 2 && j < m[i].length - 2) {
                     // bottom border
                     list.push(
                         { target: 'v' + i + 1 + ' ' + j, weight: m[i + 1][j] },
                         { target: 'v' + i + 1 + ' ' + j + 1, weight: m[i + 1][j + 1] });
-                    adjlist['v' + i + ' ' + j].push(list);
+                    adjlist.set('v' + i + ' ' + j, list);
                 }
                 if (i < m.length - 2 && j === m[i].length - 2) {
                     // bottom border
@@ -101,12 +101,12 @@ export class MultiMatch {
                         { target: 'v' + i + ' ' + j + 1, weight: m[i][j + 1] },
                         { target: 'v' + i + 1 + ' ' + j + 1, weight: m[i + 1][j + 1] });
 
-                    adjlist['v' + i + ' ' + j].push(list);
+                    adjlist.set('v' + i + ' ' + j, list);
                 }
             }
         }
-        console.log(adjlist.length);
-        console.log(JSON.stringify(adjlist['v0 0']))
+        console.log(adjlist.size);
+        console.log(adjlist.get('v0 0'));
         console.log('length', m.length, m[0].length);
         //console.log(d.size)
     }
