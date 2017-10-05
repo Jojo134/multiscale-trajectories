@@ -59,45 +59,98 @@ export class MultiMatch {
                 this.simMatrix[i][j] = this.rad2degree(this.computeAngle(this.vectors1[i], this.vectors2[j]));
             }
         }
+
         //console.log(this.simMatrix);
         this.getPathThroughSimMatrix(this.simMatrix);
     }
     getPathThroughSimMatrix(m: number[][]) {
         const adjlist = new Map<string, { target: string, weight: number }[]>();
-        for (let i = 0; i < m.length - 1; i++) {
-            for (let j = 0; j < m[i].length - 1; j++) {
+        for (let i = 0; i < m.length; i++) {
+            for (let j = 0; j < m[0].length; j++) {
                 adjlist['v' + i + ' ' + j] = [];
                 const list = [];
-                if (i < m.length - 2 && j < m[i].length - 2) {
+                if (i < m.length - 1 && j < m[0].length - 1) {
                     // non border
-                    list.push(
-                        { target: 'v' + (i + 1) + ' ' + j, weight: m[i + 1][j] },
-                        { target: 'v' + (i + 1) + ' ' + (j + 1), weight: m[i + 1][j + 1] },
-                        { target: 'v' + i + ' ' + (j + 1), weight: m[i][j + 1] });
-                    adjlist.set('v' + i + ' ' + j, list);
-                }
-                if (i === m.length - 2 && j < m[i].length - 2) {
-                    // bottom border
-                    list.push(
-                        { target: 'v' + (i + 1) + ' ' + j, weight: m[i + 1][j] },
-                        { target: 'v' + (i + 1) + ' ' + (j + 1), weight: m[i + 1][j + 1] });
-                    adjlist.set('v' + i + ' ' + j, list);
-                }
-                if (i < m.length - 2 && j === m[i].length - 2) {
-                    // bottom border
-                    list.push(
+                    list.push({ target: 'v' + (i + 1) + ' ' + j, weight: m[i + 1][j] },
                         { target: 'v' + i + ' ' + (j + 1), weight: m[i][j + 1] },
                         { target: 'v' + (i + 1) + ' ' + (j + 1), weight: m[i + 1][j + 1] });
-
+                    adjlist.set('v' + i + ' ' + j, list);
+                } else if (j < m[0].length && i === m.length - 1) {
+                    list.push({ target: 'v' + (i + 1) + ' ' + j, weight: m[i][j + 1] });
+                    adjlist.set('v' + i + ' ' + j, list);
+                } else if (i < m.length && j === m[0].length - 1) {
+                    list.push({ target: 'v' + i + ' ' + (j + 1), weight: m[i + 1][j] });
                     adjlist.set('v' + i + ' ' + j, list);
                 }
             }
         }
-        console.log(adjlist.size);
-        console.log(adjlist.get('v0 0'));
-        console.log(adjlist.get('v10 10'));
+        // console.log(adjlist.size);
+        // console.log(adjlist.get('v0 0'));
+        // console.log(adjlist.get('v10 10'));
         console.log('length', m.length, m[0].length);
-        //console.log(d.size)
+        // console.log(d.size)
+        // console.log(adjlist.get('v2 3'));
+
+        console.log(adjlist.forEach((e, key) => console.log(key, e)))
+        // 11 16
+        //this.dijkstra(adjlist, 'v0 0');
+    }
+    dijkstra(ajdlist: Map<string, { target: string, weight: number }[]>, source) {
+        // init
+        const vertex = new Set<string>(ajdlist.keys());
+        const dist = new Map<string, number>();
+        const prev = new Map<string, number>();
+        vertex.forEach((v) => { dist.set(v, Infinity); prev.set(v, undefined); });
+        dist[source] = 0;
+        console.log(dist);
+        // while
+        while (vertex.size !== 0) {
+            let u;
+            for (const key of Array.from(dist.keys())) {
+                if (dist[key] < u) {
+                    u = { key: key, weight: dist[key] };
+                    console.log(u, key, dist[key]);
+                }
+                // const u = dist.reduce((p, v) => Math.min(p.weight, v.weight));
+            }
+            console.log(u.key)
+            vertex.delete(u.key);
+
+            ajdlist.get(u.key).forEach(v => {
+                if (vertex.has(v.target)) {
+                    const alt = dist[u] + v.weight;
+                    if (alt < dist[v.target]) {
+                        dist[v.target] = alt;
+                        prev[v.target] = u;
+                    }
+                }
+            });
+        }
+        return prev;
+
+    }
+
+    shape() {
+
+    }
+
+    length() {
+
+    }
+
+    direction() {
+        console.log('direction1', this.vectors1.reduce((sum, v) => this.addV(sum, v)));
+        console.log('direction2', this.vectors2.reduce((sum, v) => this.addV(sum, v)));
+    }
+    trajectoryDirection(traj: Vector[]) {
+        traj.reduce((sum, c) => sum = this.addV(sum, c));
+    }
+    position() {
+
+    }
+
+    duration() {
+
     }
 
     computeAngle(v1: Vector, v2: Vector) {
@@ -106,29 +159,6 @@ export class MultiMatch {
     rad2degree(radians) {
         return radians * (180 / Math.PI);
     }
-    shape(traj1: PointType[], traj2: PointType[]) {
-
-    }
-
-    length(traj1: PointType[], traj2: PointType[]) {
-
-    }
-
-    direction(traj1: PointType[], traj2: PointType[]) {
-        console.log('direction1', this.vectors1.reduce((sum, v) => this.addV(sum, v)));
-        console.log('direction2', this.vectors2.reduce((sum, v) => this.addV(sum, v)));
-    }
-    trajectoryDirection(traj: Vector[]) {
-        traj.reduce((sum, c) => sum = this.addV(sum, c));
-    }
-    position(traj1: PointType[], traj2: PointType[]) {
-
-    }
-
-    duration(traj1: PointType[], traj2: PointType[]) {
-
-    }
-
     dotP(v0: Vector, v1: Vector) {
         return ((v0.x * v1.x) + (v0.y * v1.y));
     }
