@@ -56,11 +56,12 @@ export class MultiMatch {
         for (let i = 0; i < this.vectors1.length; i++) {
             this.simMatrix[i] = [];
             for (let j = 0; j < this.vectors2.length; j++) {
-                this.simMatrix[i][j] = this.rad2degree(this.computeAngle(this.vectors1[i], this.vectors2[j]));
+                // this.simMatrix[i][j] = this.rad2degree(this.computeAngle(this.vectors1[i], this.vectors2[j]));
+                this.simMatrix[i][j] = this.vectorLength(this.subtracV(this.vectors1[i], this.vectors2[j]));
             }
         }
 
-        //console.log(this.simMatrix);
+        console.log(this.simMatrix);
         this.getPathThroughSimMatrix(this.simMatrix);
     }
     getPathThroughSimMatrix(m: number[][]) {
@@ -87,47 +88,63 @@ export class MultiMatch {
         // console.log(adjlist.size);
         // console.log(adjlist.get('v0 0'));
         // console.log(adjlist.get('v10 10'));
-        console.log('length', m.length, m[0].length);
+        // console.log('length', m.length, m[0].length);
         // console.log(d.size)
         // console.log(adjlist.get('v2 3'));
 
-        console.log(adjlist.forEach((e, key) => console.log(key, e)))
+        // console.log(adjlist.forEach((e, key) => console.log(key, e)))
         // 11 16
-        //this.dijkstra(adjlist, 'v0 0');
+        this.dijkstra(adjlist, 'v0 0');
     }
     dijkstra(ajdlist: Map<string, { target: string, weight: number }[]>, source) {
         // init
-        const vertex = new Set<string>(ajdlist.keys());
+        const nodes = Array.from(ajdlist.keys());
         const dist = new Map<string, number>();
-        const prev = new Map<string, number>();
-        vertex.forEach((v) => { dist.set(v, Infinity); prev.set(v, undefined); });
-        dist[source] = 0;
-        console.log(dist);
-        // while
-        while (vertex.size !== 0) {
-            let u;
+        const prev = new Map<string, { key: string, weight: number }>();
+        nodes.forEach((n) => { dist.set(n, Infinity); prev.set(n, undefined); });
+        dist.set(source, 0);
+        console.log(Array.from(dist.keys()));
+        // start mit kinder
+        while (nodes.length > 0) {
+            let u = { key: '', weight: Infinity };
             for (const key of Array.from(dist.keys())) {
-                if (dist[key] < u) {
-                    u = { key: key, weight: dist[key] };
-                    console.log(u, key, dist[key]);
+                if (dist.get(key) < u.weight) {
+                    u = { key: key, weight: dist.get(key) };
                 }
-                // const u = dist.reduce((p, v) => Math.min(p.weight, v.weight));
             }
-            console.log(u.key)
-            vertex.delete(u.key);
 
-            ajdlist.get(u.key).forEach(v => {
-                if (vertex.has(v.target)) {
-                    const alt = dist[u] + v.weight;
-                    if (alt < dist[v.target]) {
-                        dist[v.target] = alt;
-                        prev[v.target] = u;
+            const index = nodes.indexOf(u.key);
+
+            if (index > -1) {
+                nodes.splice(index, 1);
+            }
+            const neighbors = ajdlist.get(u.key);
+
+            for (const n in neighbors) {
+                if (nodes.includes(neighbors[n].target)) {
+                    // dist update
+                    const alt = dist.get(u.key) + neighbors[n].weight;
+                    if (alt < dist.get(neighbors[n].target)) {
+                        dist.set(neighbors[n].target, alt);
+                        prev.set(neighbors[n].target, u);
                     }
                 }
-            });
+            }
+            nodes.pop()
         }
         return prev;
+    }
 
+    getShortestPath(target: string, prev: Map<string, number>) {
+        const path = [target];
+        let u = target;
+
+        prev.forEach((value, key) => {
+            u = prev[u];
+            path.push(u);
+        });
+
+        return path.reverse();
     }
 
     shape() {
@@ -168,6 +185,9 @@ export class MultiMatch {
     }
     addV(v0, v1) {
         return { x: v0.x + v1.x, y: v0.y + v1.y, z: v0.z + v1.z };
+    }
+    subtracV(v0, v1) {
+        return { x: v0.x - v1.x, y: v0.y - v1.y, z: v0.z - v1.z };
     }
     normalizeV(v: Vector) {
         const factor = this.vectorLength(v);
