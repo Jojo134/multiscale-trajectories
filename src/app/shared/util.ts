@@ -94,8 +94,10 @@ export class MultiMatch {
 
         // console.log(adjlist.forEach((e, key) => console.log(key, e)))
         // 11 16
-        this.dijkstra(adjlist, 'v0 0');
+        let paths = this.dijkstra(adjlist, 'v0 0');
+        console.log(this.getShortestPath('v' + (m.length - 1) + ' ' + (m[0].length - 1), paths));
     }
+
     dijkstra(ajdlist: Map<string, { target: string, weight: number }[]>, source) {
         // init
         const nodes = Array.from(ajdlist.keys());
@@ -103,16 +105,15 @@ export class MultiMatch {
         const prev = new Map<string, { key: string, weight: number }>();
         nodes.forEach((n) => { dist.set(n, Infinity); prev.set(n, undefined); });
         dist.set(source, 0);
-        console.log(Array.from(dist.keys()));
+
         // start mit kinder
         while (nodes.length > 0) {
             let u = { key: '', weight: Infinity };
-            for (const key of Array.from(dist.keys())) {
+            for (const key of nodes) {
                 if (dist.get(key) < u.weight) {
                     u = { key: key, weight: dist.get(key) };
                 }
             }
-
             const index = nodes.indexOf(u.key);
 
             if (index > -1) {
@@ -124,23 +125,25 @@ export class MultiMatch {
                 if (nodes.includes(neighbors[n].target)) {
                     // dist update
                     const alt = dist.get(u.key) + neighbors[n].weight;
+                    // console.log(alt, dist.get(neighbors[n].target))
                     if (alt < dist.get(neighbors[n].target)) {
                         dist.set(neighbors[n].target, alt);
                         prev.set(neighbors[n].target, u);
                     }
                 }
             }
-            nodes.pop()
+
         }
+        // prev.forEach((v, key) => console.log(key, v));
         return prev;
     }
 
-    getShortestPath(target: string, prev: Map<string, number>) {
+    getShortestPath(target: string, prev: Map<string, { key: string, weight: number }>) {
         const path = [target];
         let u = target;
 
-        prev.forEach((value, key) => {
-            u = prev[u];
+        prev.forEach((value, mKey) => {
+            u = prev[u].key;
             path.push(u);
         });
 
