@@ -94,7 +94,9 @@ export class MultiMatch {
 
         // console.log(adjlist.forEach((e, key) => console.log(key, e)))
         // 11 16
-        let paths = this.dijkstra(adjlist, 'v0 0');
+        const paths = this.dijkstra(adjlist, 'v0 0');
+        paths.forEach((v, key) => console.log(key, v));
+        console.log('v' + (m.length - 1) + ' ' + (m[0].length - 1));
         console.log(this.getShortestPath('v' + (m.length - 1) + ' ' + (m[0].length - 1), paths));
     }
 
@@ -121,14 +123,14 @@ export class MultiMatch {
             }
             const neighbors = ajdlist.get(u.key);
 
-            for (const n in neighbors) {
-                if (nodes.includes(neighbors[n].target)) {
+            for (const v in neighbors) {
+                if (nodes.includes(neighbors[v].target)) {
                     // dist update
-                    const alt = dist.get(u.key) + neighbors[n].weight;
+                    const alt = dist.get(u.key) + neighbors[v].weight;
                     // console.log(alt, dist.get(neighbors[n].target))
-                    if (alt < dist.get(neighbors[n].target)) {
-                        dist.set(neighbors[n].target, alt);
-                        prev.set(neighbors[n].target, u);
+                    if (alt < dist.get(neighbors[v].target)) {
+                        dist.set(neighbors[v].target, alt);
+                        prev.set(neighbors[v].target, u);
                     }
                 }
             }
@@ -142,10 +144,11 @@ export class MultiMatch {
         const path = [target];
         let u = target;
 
-        prev.forEach((value, mKey) => {
-            u = prev[u].key;
+        while (prev.get(u)) {
+            console.log(prev.get(u).key);
+            u = prev.get(u).key;
             path.push(u);
-        });
+        }
 
         return path.reverse();
     }
