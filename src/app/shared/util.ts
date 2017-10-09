@@ -21,7 +21,9 @@ export function center_of_masst(points: PointType[]): PointType {
 export function euclid_distance(p1: PointType, p2: PointType) {
     return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 }
-
+export function calcdiag(height: number, width: number): number {
+    return Math.sqrt(height * height + width * width);
+}
 class Vector {
     x: number;
     y: number;
@@ -37,12 +39,30 @@ export class MultiMatch {
     vectors1: Vector[];
     vectors2: Vector[];
     traj2: PointType[];
-    compare(traj1: PointType[], traj2: PointType[]) {
+    compare(traj1: PointType[], traj2: PointType[], diagonal: number) {
         this.traj1 = traj1;
         this.traj2 = traj2;
         this.vectors1 = this.createVectors(this.traj1);
         this.vectors2 = this.createVectors(this.traj2);
         this.computeSimilarityMatrix();
+        const path = this.getPathThroughSimMatrix(this.simMatrix);
+        console.log(path);
+        // last position???
+        const scores = [];
+        const maxDuration = Math.max(...this.traj1.concat(this.traj2).map(t => t.duration));
+        path.forEach(v => {
+            const vIds = v.split(' ');
+            vIds[0] = vIds[0].slice(1);
+            const score = {
+                shape: this.shape(this.vectors1[vIds[0]], this.vectors2[vIds[1]]) / (2 * diagonal),
+                length: this.length(this.vectors1[vIds[0]], this.vectors2[vIds[1]]) / diagonal,
+                direction: this.direction(this.vectors1[vIds[0]], this.vectors2[vIds[1]]) / Math.PI,
+                position: this.position(traj1[vIds[0]], this.traj2[vIds[1]]) / diagonal,
+                duration: this.duration(traj1[vIds[0]], this.traj2[vIds[1]]) / maxDuration
+            };
+            scores.push(score);
+        });
+        console.log(scores);
     }
     createVectors(traj: PointType[]): Vector[] {
         const vectorList = [];
@@ -60,11 +80,8 @@ export class MultiMatch {
                 this.simMatrix[i][j] = this.vectorLength(this.subtracV(this.vectors1[i], this.vectors2[j]));
             }
         }
-
-        console.log(this.simMatrix);
-        this.getPathThroughSimMatrix(this.simMatrix);
     }
-    getPathThroughSimMatrix(m: number[][]) {
+    getPathThroughSimMatrix(m: number[][]): string[] {
         const adjlist = new Map<string, { target: string, weight: number }[]>();
         for (let i = 0; i < m.length; i++) {
             for (let j = 0; j < m[0].length; j++) {
@@ -85,22 +102,12 @@ export class MultiMatch {
                 }
             }
         }
-        // console.log(adjlist.size);
-        // console.log(adjlist.get('v0 0'));
-        // console.log(adjlist.get('v10 10'));
-        // console.log('length', m.length, m[0].length);
-        // console.log(d.size)
-        // console.log(adjlist.get('v2 3'));
 
-        // console.log(adjlist.forEach((e, key) => console.log(key, e)))
-        // 11 16
         const paths = this.dijkstra(adjlist, 'v0 0');
-        paths.forEach((v, key) => console.log(key, v));
-        console.log('v' + (m.length - 1) + ' ' + (m[0].length - 1));
-        console.log(this.getShortestPath('v' + (m.length - 1) + ' ' + (m[0].length - 1), paths));
+        return this.getShortestPath('v' + (m.length - 1) + ' ' + (m[0].length - 1), paths);
     }
 
-    dijkstra(ajdlist: Map<string, { target: string, weight: number }[]>, source) {
+    dijkstra(ajdlist: Map<string, { target: string, weight: number }[]>, source): Map<string, { key: string, weight: number }> {
         // init
         const nodes = Array.from(ajdlist.keys());
         const dist = new Map<string, number>();
@@ -127,7 +134,6 @@ export class MultiMatch {
                 if (nodes.includes(neighbors[v].target)) {
                     // dist update
                     const alt = dist.get(u.key) + neighbors[v].weight;
-                    // console.log(alt, dist.get(neighbors[n].target))
                     if (alt < dist.get(neighbors[v].target)) {
                         dist.set(neighbors[v].target, alt);
                         prev.set(neighbors[v].target, u);
@@ -136,16 +142,14 @@ export class MultiMatch {
             }
 
         }
-        // prev.forEach((v, key) => console.log(key, v));
         return prev;
     }
 
-    getShortestPath(target: string, prev: Map<string, { key: string, weight: number }>) {
+    getShortestPath(target: string, prev: Map<string, { key: string, weight: number }>): string[] {
         const path = [target];
         let u = target;
 
         while (prev.get(u)) {
-            console.log(prev.get(u).key);
             u = prev.get(u).key;
             path.push(u);
         }
@@ -153,27 +157,28 @@ export class MultiMatch {
         return path.reverse();
     }
 
-    shape() {
-
+    shape(v1: Vector, v2: Vector) {
+        return this.vectorLength(this.subtracV(v1, v2));
     }
 
-    length() {
-
+    length(v1: Vector, v2: Vector) {
+        return this.vectorLength(v1) - this.vectorLength(v2);
     }
 
-    direction() {
-        console.log('direction1', this.vectors1.reduce((sum, v) => this.addV(sum, v)));
-        console.log('direction2', this.vectors2.reduce((sum, v) => this.addV(sum, v)));
+    direction(v1: Vector, v2: Vector) {
+        return this.computeAngle(v1, v2);
     }
+
+    position(pos1: PointType, pos2: PointType) {
+        return euclid_distance(pos1, pos2);
+    }
+
+    duration(pos1: PointType, pos2: PointType) {
+        return pos1.duration - pos2.duration;
+    }
+
     trajectoryDirection(traj: Vector[]) {
         traj.reduce((sum, c) => sum = this.addV(sum, c));
-    }
-    position() {
-
-    }
-
-    duration() {
-
     }
 
     computeAngle(v1: Vector, v2: Vector) {
