@@ -13,6 +13,9 @@ import { HomeComponent } from './home/home.component';
 import { routing, appRoutingProviders } from './app.routes';
 import { MultiselectComponent } from './shared/multiselect/multiselect.component';
 import { NouisliderModule } from 'ng2-nouislider/src/nouislider';
+import { DetailCompareComponent } from './detail-compare/detail-compare.component';
+import { HistogramSliderComponent } from './shared/histogram-slider/histogram-slider.component';
+import { SimMatrixComponent } from './shared/sim-matrix/sim-matrix.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +23,10 @@ import { NouisliderModule } from 'ng2-nouislider/src/nouislider';
     TrajviewComponent,
     Trajview1Component,
     HomeComponent,
-    MultiselectComponent
+    MultiselectComponent,
+    DetailCompareComponent,
+    HistogramSliderComponent,
+    SimMatrixComponent
   ],
   imports: [
     BrowserModule, NouisliderModule, MdCheckboxModule, BrowserAnimationsModule,

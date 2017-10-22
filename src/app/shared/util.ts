@@ -32,7 +32,13 @@ class Vector {
         this.y = y;
     }
 }
-
+class Score {
+    shape: number;
+    length: number;
+    direction: number;
+    position: number;
+    duration: number;
+}
 export class MultiMatch {
     simMatrix: number[][];
     traj1: PointType[];
@@ -48,7 +54,7 @@ export class MultiMatch {
         const path = this.getPathThroughSimMatrix(this.simMatrix);
         console.log(path);
         // last position???
-        const scores = [];
+        const scores: Score[] = [];
         const maxDuration = Math.max(...this.traj1.concat(this.traj2).map(t => t.duration));
         path.forEach(v => {
             const vIds = v.split(' ');
@@ -63,6 +69,24 @@ export class MultiMatch {
             scores.push(score);
         });
         console.log(scores);
+        const summed = scores.reduce((sum, a) => {
+            return {
+                shape: sum.shape + a.shape,
+                length: sum.length + a.length,
+                direction: sum.direction + a.direction,
+                position: sum.position + a.position,
+                duration: sum.duration + a.duration
+            };
+        });
+        const average = {
+            shape: summed.shape / scores.length,
+            length: summed.length / scores.length,
+            direction: summed.direction / scores.length,
+            position: summed.position / scores.length,
+            duration: summed.duration / scores.length
+        };
+        console.log(average);
+        return average;
     }
     createVectors(traj: PointType[]): Vector[] {
         const vectorList = [];
@@ -71,7 +95,7 @@ export class MultiMatch {
         }
         return vectorList;
     }
-    computeSimilarityMatrix() {
+    computeSimilarityMatrix(): number[][] {
         this.simMatrix = [];
         for (let i = 0; i < this.vectors1.length; i++) {
             this.simMatrix[i] = [];
@@ -80,6 +104,7 @@ export class MultiMatch {
                 this.simMatrix[i][j] = this.vectorLength(this.subtracV(this.vectors1[i], this.vectors2[j]));
             }
         }
+        return this.simMatrix;
     }
     getPathThroughSimMatrix(m: number[][]): string[] {
         const adjlist = new Map<string, { target: string, weight: number }[]>();

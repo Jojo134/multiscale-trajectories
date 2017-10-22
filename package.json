@@ -29,9 +29,11 @@
     "d3": "^4.10.0",
     "font-awesome": "^4.7.0",
     "lodash": "^4.17.4",
+    "machine_learning": "^0.1.1",
     "mathjs": "^3.16.3",
     "ng2-nouislider": "^1.7.0",
     "node-dijkstra": "^2.5.0",
+    "node-weka": "0.0.8",
     "nouislider": "^10.1.0",
     "rxjs": "^5.4.2",
     "zone.js": "^0.8.14"

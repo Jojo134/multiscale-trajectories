@@ -5,6 +5,10 @@ import 'rxjs/Rx';
 import { Observable } from 'rxjs/Observable';
 import * as d3 from 'd3';
 import { Trajectory, TrajectoryViewType, QTree, AABB } from '../data-structures';
+import { MultiMatch, calcdiag } from '../shared';
+import * as weka from 'node-weka/lib/weka-lib.js';
+import * as arff from 'node-arff';
+import * as ml from 'machine_learning';
 
 @Component({
   selector: 'app-home',
@@ -51,7 +55,7 @@ export class HomeComponent implements OnInit {
   fix_data: Array<Trajectory> = [];
   resolutions: Array<{ city: string, height: number, width: number }> = [];
   qTree: QTree;
-
+  simMatrix: number[][];
   constructor(public http: Http) {
     const boundary = new AABB({ x: 50, y: 50 }, 50);
     this.qTree = new QTree(new AABB({ x: 50, y: 50 }, 50), 20);
@@ -66,6 +70,49 @@ export class HomeComponent implements OnInit {
     // console.log(this.qTree.queryRange(boundary));
     // console.log('ragnequery traj', this.qTree.queryRangeTrajectory(boundary));
   }
+  cluster() {
+    const simScores = [];
+    console.log(this.fix_data);
+    const mm = new MultiMatch();
+    for (let i = 0; i < this.fix_data.length; i++) {
+      simScores[i] = [];
+      for (let k = i + 1; k < this.fix_data.length; k++) {
+        simScores[i][k] = {
+          p1: this.fix_data[i].participant,
+          s1: this.fix_data[i].stimulus,
+          p2: this.fix_data[k].participant,
+          s2: this.fix_data[k].stimulus,
+          scores: mm.compare(this.fix_data[i].points, this.fix_data[k].points, calcdiag(1651, 1200)),
+          cluster: 'none'
+        };
+      }
+    }
+    const data = [];
+    for (let i = 0; i < this.fix_data.length; i++) {
+      for (let k = i + 1; k < this.fix_data.length; k++) {
+        data.push(Object.values(simScores[i][k].scores));
+      }
+    }
+    console.log(data);
+    const result = ml.kmeans.cluster({
+      data: data,
+      k: 4,
+      epochs: 100,
+      distance: { type: 'euclidean' }
+    });
+    // arrfjson {header:{ relation: , attributes:[{},{}],data:[{},{}]}}}
+    // list participant, stimuli as nominal
+    console.log('clusters : ', result.clusters);
+    console.log('means : ', result.means);
+    console.log(simScores);
+    console.log(JSON.stringify(simScores));
+  }
+  showSimMarix() {
+    const mm = new MultiMatch();
+    const trs = this.fix_data.filter(t => t.stimulus === '01_Antwerpen_S1.jpg').map(t => t.points);
+    mm.compare(trs[0], trs[1], calcdiag(1651, 1200));
+    this.simMatrix = mm.simMatrix;
+  }
 
   filterData() {
     this.filteredFixData = [];
@@ -74,7 +121,7 @@ export class HomeComponent implements OnInit {
         || this.selected_stimuli.filter(e => e.name === traj.stimulus).length > 0;
     });
     if (this.viewAsQuadtree) {
-      console.log('going quad')
+      console.log('going quad');
       this.filteredFixData = prefilteredFixData.map(traj => {
         return {
           stimulus: traj.stimulus, participant: traj.participant, color: traj.color,

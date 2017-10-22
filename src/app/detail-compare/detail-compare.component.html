@@ -6,20 +6,14 @@
         <input readonly [value]="minQuadsize" id="minSize" type="number">
       </div>
       <md-checkbox [(ngModel)]="viewAsQuadtree">View as Quadtree</md-checkbox>
-      <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="1" [max]="8" [(ngModel)]="someRange"></nouislider>
-
+      <app-histogram-slider></app-histogram-slider>
       <button (click)="filterData()">Filter</button>
       <hr>
       <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
       <hr>
       <hr>
       <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
-      <!--<app-trajview class="offset-3 col-9" *ngIf="chartData" [data]="chartData"></app-trajview>-->
-      <button (click)="cluster()">Cluster</button>
-      <button (click)="showSimMarix()">simMatrix</button>
-      <app-sim-matrix [simMatrix]="simMatrix" [labels]="labels"></app-sim-matrix>
     </div>
-    <app-trajview1 class="col-sm-9" *ngIf="filteredFixData.length !== 0" [quadLines]="viewAsQuadtree" [data]="filteredFixData"></app-trajview1>
+    <app-trajview1 class="col-sm-9" *ngIf="filteredFixData.length !== 0" [data]="filteredFixData"></app-trajview1>
   </div>
-
 </div>

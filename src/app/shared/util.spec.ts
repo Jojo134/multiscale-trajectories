@@ -6,18 +6,23 @@ fdescribe('utils test', () => {
     let mm: MultiMatch;
     fit('mm test', () => {
         mm = new MultiMatch();
-        //console.log(mm.computeAngle({ x: 220, y: -142 }, { x: 220, y: -142 }));
+        // console.log(mm.computeAngle({ x: 220, y: -142 }, { x: 220, y: -142 }));
         console.log(mm.compare(testTraj1, testTraj2, calcdiag(1651, 1200)));
+    });
+    fit('mm test equal', () => {
+        mm = new MultiMatch();
+        // console.log(mm.computeAngle({ x: 220, y: -142 }, { x: 220, y: -142 }));
+        console.log(mm.compare(testTraj1, testTraj1, calcdiag(1651, 1200)));
     });
     it('mm2 test', () => {
         mm = new MultiMatch();
 
-        let matrix = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]];
+        const matrix = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]];
         console.log(mm.getPathThroughSimMatrix(matrix));
     });
     it('mm2 test', () => {
         mm = new MultiMatch();
-        let matrix = [[8, 9, 6, 7, 5],
+        const matrix = [[8, 9, 6, 7, 5],
         [8, 1, 10, 12, 11],
         [4, 12, 0.5, 7, 3],
         [7, 12, 7, 1, 4],

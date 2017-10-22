@@ -10,6 +10,7 @@ import { Trajectory, TrajectoryViewType } from '../../data-structures';
 export class Trajview1Component implements OnInit, OnChanges {
   @ViewChild('chart1') private chartContainer: ElementRef;
   @Input() private data: any;
+  @Input() private quadLines: boolean;
   linefunc1 = d3.line()
     .x(function (d) { return d['x']; })
     .y(function (d) { return d['y']; });
@@ -39,7 +40,15 @@ export class Trajview1Component implements OnInit, OnChanges {
       this.updateChart();
     }
   }
+  make_x_axis() {
+    return d3.axisBottom(this.xScale)
+      .ticks(5);
+  }
 
+  make_y_axis() {
+    return d3.axisLeft(this.yScale)
+      .ticks(5);
+  }
   createChart() {
     // set the dimensions and margins of the graph
     const element = this.chartContainer.nativeElement;
@@ -50,8 +59,8 @@ export class Trajview1Component implements OnInit, OnChanges {
     this.height = 1200;
 
     // set the ranges
-    const x = d3.scaleLinear().range([0, this.width]);
-    const y = d3.scaleLinear().range([this.height, 0]);
+    this.xScale = d3.scaleLinear().range([0, this.width]);
+    this.yScale = d3.scaleLinear().range([this.height, 0]);
 
     this.svg = d3.select(element).append('svg')
       .attr('class', 'svg-element')
@@ -63,6 +72,18 @@ export class Trajview1Component implements OnInit, OnChanges {
       .append('g')
       .attr('transform',
       'translate(' + this.margin.left + ',' + this.margin.top + ')');
+    if (this.quadLines) {
+      this.svg.append('g')
+        .attr('class', 'grid')
+        .attr('transform', 'translate(0,' + this.height + ')')
+        .call(this.make_x_axis()
+          .tickSize(-this.height));
+
+      this.svg.append('g')
+        .attr('class', 'grid')
+        .call(this.make_x_axis()
+          .tickSize(-this.width));
+    }
   }
 
   drawTraj(points, color) {
