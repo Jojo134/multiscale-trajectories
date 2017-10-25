@@ -9,7 +9,7 @@ import { Trajectory, TrajectoryViewType } from '../../data-structures';
 })
 export class Trajview1Component implements OnInit, OnChanges {
   @ViewChild('chart1') private chartContainer: ElementRef;
-  @Input() private data: any;
+  @Input() private data: Array<TrajectoryViewType>;
   @Input() private quadLines: boolean;
   linefunc1 = d3.line()
     .x(function (d) { return d['x']; })
@@ -96,7 +96,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   }
 
   updateChart() {
-    const update = this.svg.selectAll('path').data(this.data);
+    const update = this.svg.selectAll('.trajectory').data(this.data);
 
     update.exit().transition().attr('stroke-width', 0).remove();
 
@@ -108,8 +108,19 @@ export class Trajview1Component implements OnInit, OnChanges {
       .attr('fill', 'none')
       .attr('d', d => this.linefunc1(d.points))
       .attr('stroke', d => d.color);
+    // this.drawPoints();
+  }
+  drawPoints() {
+    const update = this.svg.selectAll('.dot').data(...this.data.map(d => d.points));
+    update.exit().transition().attr('r', 0).remove();
+
+    update.enter().append('circle').attr('class', 'dot')
+      .attr('cx', function (d, i) { return d['x']; })
+      .attr('cy', function (d) { return d['y']; })
+      .attr('r', 5);
   }
   removeItem() {
+
     this.data.pop();
     this.updateChart();
   }
