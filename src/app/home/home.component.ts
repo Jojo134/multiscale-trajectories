@@ -1,11 +1,14 @@
+
 import { Component, OnInit } from '@angular/core';
 import { Http } from '@angular/http';
+import { NgProgress } from 'ngx-progressbar';
+
 import * as Baby from 'babyparse';
 import 'rxjs/Rx';
 import { Observable } from 'rxjs/Observable';
 import * as d3 from 'd3';
 import { Trajectory, TrajectoryViewType, QTree, AABB } from '../data-structures';
-import { MultiMatch, calcdiag } from '../shared';
+import { MultiMatch, calcdiag, stringToColor, DataService } from '../shared';
 import * as weka from 'node-weka/lib/weka-lib.js';
 import * as arff from 'node-arff';
 import * as ml from 'machine_learning';
@@ -16,32 +19,9 @@ import * as ml from 'machine_learning';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  stringToColor = (function () {
-    let instance = null;
 
-    return {
-      next: function stringToColor(str) {
-        if (instance === null) {
-          instance = {};
-          instance.stringToColorHash = {};
-          instance.nextVeryDifferntColorIdx = 0;
-          instance.veryDifferentColors = ['#000000', '#00FF00', '#0000FF', '#FF0000', '#01FFFE', '#FFA6FE', '#FFDB66', '#006401',
-            '#010067', '#95003A', '#007DB5', '#FF00F6', '#FFEEE8', '#774D00', '#90FB92', '#0076FF', '#D5FF00', '#FF937E', '#6A826C',
-            '#FF029D', '#FE8900', '#7A4782', '#7E2DD2', '#85A900', '#FF0056', '#A42400', '#00AE7E', '#683D3B', '#BDC6FF', '#263400',
-            '#BDD393', '#00B917', '#9E008E', '#001544', '#C28C9F', '#FF74A3', '#01D0FF', '#004754', '#E56FFE', '#788231', '#0E4CA1',
-            '#91D0CB', '#BE9970', '#968AE8', '#BB8800', '#43002C', '#DEFF74', '#00FFC6', '#FFE502', '#620E00', '#008F9C', '#98FF52',
-            '#7544B1', '#B500FF', '#00FF78', '#FF6E41', '#005F39', '#6B6882', '#5FAD4E', '#A75740', '#A5FFD2', '#FFB167', '#009BFF',
-            '#E85EBE'];
-        }
-
-        if (!instance.stringToColorHash[str]) {
-          instance.stringToColorHash[str] = instance.veryDifferentColors[instance.nextVeryDifferntColorIdx++];
-        }
-        return instance.stringToColorHash[str];
-      }
-    };
-  })();
   private chartData: Array<any>;
+  simScores;
   dataLoaded = false;
   someRange = 5;
   participants = [];
@@ -56,7 +36,7 @@ export class HomeComponent implements OnInit {
   resolutions: Array<{ city: string, height: number, width: number }> = [];
   qTree: QTree;
   simMatrix: number[][];
-  constructor(public http: Http) {
+  constructor(public http: Http, public ngProgress: NgProgress, private dataService: DataService) {
     const boundary = new AABB({ x: 50, y: 50 }, 50);
     this.qTree = new QTree(new AABB({ x: 50, y: 50 }, 50), 20);
 
@@ -71,13 +51,45 @@ export class HomeComponent implements OnInit {
     // console.log('ragnequery traj', this.qTree.queryRangeTrajectory(boundary));
   }
   cluster() {
-    const simScores = [];
-    console.log(this.fix_data);
-    const mm = new MultiMatch();
+    this.computeSimScores();
+    console.log('sim scores done');
+    const data = [];
+    this.ngProgress.start();
     for (let i = 0; i < this.fix_data.length; i++) {
-      simScores[i] = [];
       for (let k = i + 1; k < this.fix_data.length; k++) {
-        simScores[i][k] = {
+        data.push(Object.values(this.simScores[i][k].scores));
+      }
+      this.ngProgress.set(i / this.fix_data.length);
+    }
+    this.ngProgress.done();
+    console.log('data transform done');
+    console.log(data);
+
+    const result = ml.kmeans.cluster({
+      data: data,
+      k: data.length > 20 ? 20 : data.length,
+      epochs: 50,
+      distance: { type: 'euclidean' }
+    });
+    // arrfjson {header:{ relation: , attributes:[{},{}],data:[{},{}]}}}
+    // list participant, stimuli as nominal
+    console.log('clusters : ', result.clusters);
+    console.log('means : ', result.means);
+    // console.log(simScores);
+    // console.log(JSON.stringify(simScores));
+  }
+  computeSimScores() {
+    this.simScores = [];
+    console.log(this.fix_data);
+    this.ngProgress.start();
+    console.log('progress bar');
+    const mm = new MultiMatch();
+    console.log('start mm');
+    for (let i = 0; i < this.fix_data.length; i++) {
+      this.simScores[i] = [];
+      for (let k = i + 1; k < this.fix_data.length; k++) {
+        console.log('starting: ', i * k);
+        this.simScores[i][k] = {
           p1: this.fix_data[i].participant,
           s1: this.fix_data[i].stimulus,
           p2: this.fix_data[k].participant,
@@ -85,27 +97,10 @@ export class HomeComponent implements OnInit {
           scores: mm.compare(this.fix_data[i].points, this.fix_data[k].points, calcdiag(1651, 1200)),
           cluster: 'none'
         };
+        this.ngProgress.set((i * k) / ((this.fix_data.length * this.fix_data.length) / 2));
       }
+      // this.ngProgress.set(i / this.fix_data.length);
     }
-    const data = [];
-    for (let i = 0; i < this.fix_data.length; i++) {
-      for (let k = i + 1; k < this.fix_data.length; k++) {
-        data.push(Object.values(simScores[i][k].scores));
-      }
-    }
-    console.log(data);
-    const result = ml.kmeans.cluster({
-      data: data,
-      k: 4,
-      epochs: 100,
-      distance: { type: 'euclidean' }
-    });
-    // arrfjson {header:{ relation: , attributes:[{},{}],data:[{},{}]}}}
-    // list participant, stimuli as nominal
-    console.log('clusters : ', result.clusters);
-    console.log('means : ', result.means);
-    console.log(simScores);
-    console.log(JSON.stringify(simScores));
   }
   showSimMarix() {
     const mm = new MultiMatch();
@@ -171,7 +166,7 @@ export class HomeComponent implements OnInit {
             const nTrajectory = new Trajectory();
             nTrajectory.participant = user;
             nTrajectory.stimulus = stimu;
-            nTrajectory.color = this.stringToColor.next(user);
+            nTrajectory.color = stringToColor.next(user);
             nTrajectory.points = result.map(d => {
               return {
                 x: +d.MappedFixationPointX,
@@ -207,6 +202,8 @@ export class HomeComponent implements OnInit {
     // change the data periodically
     //  setInterval(() => this.generateData(), 3000);
     // }, 1000);
+    //this.dataService.getResolution('/assets/resolutions');
+    //this.dataService.loadTrajectories(this.filenameall);
     this.getResolution();
     this.getTrajectories();
     // d3.queue().defer(this.getResolution).await(this.getTrajectories)

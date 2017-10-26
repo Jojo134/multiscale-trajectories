@@ -32,6 +32,7 @@
     "machine_learning": "^0.1.1",
     "mathjs": "^3.16.3",
     "ng2-nouislider": "^1.7.0",
+    "ngx-progressbar": "^2.1.1",
     "node-dijkstra": "^2.5.0",
     "node-weka": "0.0.8",
     "nouislider": "^10.1.0",

@@ -4,7 +4,7 @@ import { stringToColor } from '../util';
 import * as d3 from 'd3';
 
 @Injectable()
-export class DataServiceService {
+export class DataService {
   resolutions: Array<{ city: string, height: number, width: number }> = [];
   stimuli: { name: string; id: number; }[];
   participants: { name: string; id: number; }[];

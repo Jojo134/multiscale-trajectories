@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MdButtonModule, MdCheckboxModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgProgressModule } from 'ngx-progressbar';
 
 import { AppComponent } from './app.component';
 import { TrajviewComponent } from './shared/trajview/trajview.component';
@@ -16,6 +17,7 @@ import { NouisliderModule } from 'ng2-nouislider/src/nouislider';
 import { DetailCompareComponent } from './detail-compare/detail-compare.component';
 import { HistogramSliderComponent } from './shared/histogram-slider/histogram-slider.component';
 import { SimMatrixComponent } from './shared/sim-matrix/sim-matrix.component';
+import { DataService } from './shared';
 
 @NgModule({
   declarations: [
@@ -30,9 +32,9 @@ import { SimMatrixComponent } from './shared/sim-matrix/sim-matrix.component';
   ],
   imports: [
     BrowserModule, NouisliderModule, MdCheckboxModule, BrowserAnimationsModule,
-    FormsModule, HttpModule, routing
+    FormsModule, HttpModule, routing, NgProgressModule
   ],
-  providers: [appRoutingProviders],
+  providers: [appRoutingProviders, DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
