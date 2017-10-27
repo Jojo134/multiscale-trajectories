@@ -22,6 +22,7 @@ import * as hamsters from 'hamsters.js';
 export class HomeComponent implements OnInit {
 
   private chartData: Array<any>;
+  nrLines: number;
   simScores;
   dataLoaded = false;
   someRange = 5;
