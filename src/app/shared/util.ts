@@ -77,7 +77,7 @@ export class MultiMatch {
         this.vectors2 = this.createVectors(this.traj2);
         this.computeSimilarityMatrix();
         const path = this.getPathThroughSimMatrix(this.simMatrix);
-        console.log(path);
+        // console.log(path);
         // last position???
         const scores: Score[] = [];
         const maxDuration = Math.max(...this.traj1.concat(this.traj2).map(t => t.duration));
@@ -93,7 +93,7 @@ export class MultiMatch {
             };
             scores.push(score);
         });
-        console.log(scores);
+        // console.log(scores);
         const summed = scores.reduce((sum, a) => {
             return {
                 shape: sum.shape + a.shape,
@@ -110,7 +110,7 @@ export class MultiMatch {
             position: summed.position / scores.length,
             duration: summed.duration / scores.length
         };
-        console.log(average);
+        // console.log(average);
         return average;
     }
     createVectors(traj: PointType[]): Vector[] {

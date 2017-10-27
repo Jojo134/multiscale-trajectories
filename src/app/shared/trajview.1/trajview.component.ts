@@ -11,6 +11,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   @ViewChild('chart1') private chartContainer: ElementRef;
   @Input() private data: Array<TrajectoryViewType>;
   @Input() private quadLines: boolean;
+  @Input() private nrLines: number;
   linefunc1 = d3.line()
     .x(function (d) { return d['x']; })
     .y(function (d) { return d['y']; });
@@ -40,14 +41,14 @@ export class Trajview1Component implements OnInit, OnChanges {
       this.updateChart();
     }
   }
-  make_x_axis() {
+  make_x_axis(ticks) {
     return d3.axisBottom(this.xScale)
-      .ticks(5);
+      .ticks(ticks);
   }
 
-  make_y_axis() {
+  make_y_axis(ticks) {
     return d3.axisLeft(this.yScale)
-      .ticks(5);
+      .ticks(ticks);
   }
   createChart() {
     // set the dimensions and margins of the graph
@@ -76,12 +77,12 @@ export class Trajview1Component implements OnInit, OnChanges {
       this.svg.append('g')
         .attr('class', 'grid')
         .attr('transform', 'translate(0,' + this.height + ')')
-        .call(this.make_x_axis()
+        .call(this.make_x_axis(this.nrLines)
           .tickSize(-this.height));
 
       this.svg.append('g')
         .attr('class', 'grid')
-        .call(this.make_x_axis()
+        .call(this.make_y_axis(this.nrLines)
           .tickSize(-this.width));
     }
   }
@@ -120,7 +121,6 @@ export class Trajview1Component implements OnInit, OnChanges {
       .attr('r', 5);
   }
   removeItem() {
-
     this.data.pop();
     this.updateChart();
   }

@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Http } from '@angular/http';
 import { NgProgress } from 'ngx-progressbar';
-
+import { WebWorkerService } from 'angular2-web-worker';
 import * as Baby from 'babyparse';
 import 'rxjs/Rx';
 import { Observable } from 'rxjs/Observable';
@@ -12,6 +12,7 @@ import { MultiMatch, calcdiag, stringToColor, DataService } from '../shared';
 import * as weka from 'node-weka/lib/weka-lib.js';
 import * as arff from 'node-arff';
 import * as ml from 'machine_learning';
+import * as hamsters from 'hamsters.js';
 
 @Component({
   selector: 'app-home',
@@ -29,6 +30,7 @@ export class HomeComponent implements OnInit {
   viewAsQuadtree: boolean;
   selected_participants = Array<{ name: string, id: number }>();
   selected_stimuli = Array<{ name: string, id: number }>();
+  resolutionName = '/assets/resolution.txt';
   filenameall = 'assets/all_fixation_data_cleaned_up.csv';
   filename = 'assets/small_fix_data_cleaned.csv';
   filteredFixData: Array<TrajectoryViewType> = [];
@@ -36,7 +38,8 @@ export class HomeComponent implements OnInit {
   resolutions: Array<{ city: string, height: number, width: number }> = [];
   qTree: QTree;
   simMatrix: number[][];
-  constructor(public http: Http, public ngProgress: NgProgress, private dataService: DataService) {
+  constructor(public http: Http, public ngProgress: NgProgress,
+    private dataService: DataService, private webWorkerService: WebWorkerService) {
     const boundary = new AABB({ x: 50, y: 50 }, 50);
     this.qTree = new QTree(new AABB({ x: 50, y: 50 }, 50), 20);
 
@@ -51,7 +54,8 @@ export class HomeComponent implements OnInit {
     // console.log('ragnequery traj', this.qTree.queryRangeTrajectory(boundary));
   }
   cluster() {
-    this.computeSimScores();
+
+    this.simScores = this.computeSimScores();
     console.log('sim scores done');
     const data = [];
     this.ngProgress.start();
@@ -64,32 +68,35 @@ export class HomeComponent implements OnInit {
     this.ngProgress.done();
     console.log('data transform done');
     console.log(data);
-
+    this.ngProgress.start();
     const result = ml.kmeans.cluster({
       data: data,
-      k: data.length > 20 ? 20 : data.length,
+      //k: data.length > 20 ? 20 : data.length,
+      k: 4,
       epochs: 50,
       distance: { type: 'euclidean' }
     });
+    this.ngProgress.done();
     // arrfjson {header:{ relation: , attributes:[{},{}],data:[{},{}]}}}
     // list participant, stimuli as nominal
     console.log('clusters : ', result.clusters);
     console.log('means : ', result.means);
     // console.log(simScores);
     // console.log(JSON.stringify(simScores));
+
   }
   computeSimScores() {
-    this.simScores = [];
-    console.log(this.fix_data);
-    this.ngProgress.start();
-    console.log('progress bar');
+    const simScores = [];
+    //console.log(data);
+    //this.ngProgress.start();
     const mm = new MultiMatch();
     console.log('start mm');
+    let combinations = [];
     for (let i = 0; i < this.fix_data.length; i++) {
-      this.simScores[i] = [];
+      simScores[i] = [];
       for (let k = i + 1; k < this.fix_data.length; k++) {
-        console.log('starting: ', i * k);
-        this.simScores[i][k] = {
+        combinations.push({ p1: i, p2: k });
+        simScores[i][k] = {
           p1: this.fix_data[i].participant,
           s1: this.fix_data[i].stimulus,
           p2: this.fix_data[k].participant,
@@ -97,10 +104,13 @@ export class HomeComponent implements OnInit {
           scores: mm.compare(this.fix_data[i].points, this.fix_data[k].points, calcdiag(1651, 1200)),
           cluster: 'none'
         };
-        this.ngProgress.set((i * k) / ((this.fix_data.length * this.fix_data.length) / 2));
+        // this.ngProgress.set((i * k) / ((data.length * data.length) / 2));
       }
-      // this.ngProgress.set(i / this.fix_data.length);
+
     }
+    console.log(combinations.length);
+    this.ngProgress.done();
+    return simScores;
   }
   showSimMarix() {
     const mm = new MultiMatch();
@@ -187,7 +197,7 @@ export class HomeComponent implements OnInit {
   }
 
   getResolution() {
-    d3.tsv('assets/resolution.txt', (err, data) => {
+    d3.tsv(this.resolutionName, (err, data) => {
       data.forEach(d => {
         this.resolutions.push({ city: d.city, height: +d.height, width: +d.width });
       });
@@ -195,15 +205,8 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    // give everything a chance to get loaded before starting the animation to reduce choppiness
-    // setTimeout(() => {
-    // this.generateData();
-
-    // change the data periodically
-    //  setInterval(() => this.generateData(), 3000);
-    // }, 1000);
-    //this.dataService.getResolution('/assets/resolutions');
-    //this.dataService.loadTrajectories(this.filenameall);
+    // this.dataService.getResolution(this.resolutionName);
+    // this.dataService.loadTrajectories(this.filename);
     this.getResolution();
     this.getTrajectories();
     // d3.queue().defer(this.getResolution).await(this.getTrajectories)

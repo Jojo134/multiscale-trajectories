@@ -11,6 +11,7 @@ export class DataService {
   fix_data: Array<Trajectory> = [];
   constructor() { }
   getAllTrajectories() {
+    console.log(this.fix_data);
     return this.fix_data;
   }
   loadTrajectories(filename: string) {

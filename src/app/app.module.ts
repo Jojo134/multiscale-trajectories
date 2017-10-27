@@ -5,6 +5,7 @@ import { HttpModule } from '@angular/http';
 import { MdButtonModule, MdCheckboxModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgProgressModule } from 'ngx-progressbar';
+import { WebWorkerService } from 'angular2-web-worker';
 
 import { AppComponent } from './app.component';
 import { TrajviewComponent } from './shared/trajview/trajview.component';
@@ -34,7 +35,7 @@ import { DataService } from './shared';
     BrowserModule, NouisliderModule, MdCheckboxModule, BrowserAnimationsModule,
     FormsModule, HttpModule, routing, NgProgressModule
   ],
-  providers: [appRoutingProviders, DataService],
+  providers: [appRoutingProviders, DataService, WebWorkerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
