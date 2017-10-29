@@ -1,11 +1,12 @@
 import { ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
-import { DetailCompareComponent } from './detail-compare/detail-compare.component';
+import { ClusterComponent } from './cluster/cluster.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'detail', component: DetailCompareComponent },
+
+  { path: 'cluster', component: ClusterComponent },
   { path: '**', redirectTo: '' }
 ];
 

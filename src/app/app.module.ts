@@ -15,10 +15,10 @@ import { HomeComponent } from './home/home.component';
 import { routing, appRoutingProviders } from './app.routes';
 import { MultiselectComponent } from './shared/multiselect/multiselect.component';
 import { NouisliderModule } from 'ng2-nouislider/src/nouislider';
-import { DetailCompareComponent } from './detail-compare/detail-compare.component';
+import { ClusterComponent } from './cluster/cluster.component';
 import { HistogramSliderComponent } from './shared/histogram-slider/histogram-slider.component';
 import { SimMatrixComponent } from './shared/sim-matrix/sim-matrix.component';
-import { DataService } from './shared';
+import { DataService, SelectionService } from './shared';
 
 @NgModule({
   declarations: [
@@ -27,7 +27,7 @@ import { DataService } from './shared';
     Trajview1Component,
     HomeComponent,
     MultiselectComponent,
-    DetailCompareComponent,
+    ClusterComponent,
     HistogramSliderComponent,
     SimMatrixComponent
   ],
@@ -35,7 +35,7 @@ import { DataService } from './shared';
     BrowserModule, NouisliderModule, MdCheckboxModule, BrowserAnimationsModule,
     FormsModule, HttpModule, routing, NgProgressModule
   ],
-  providers: [appRoutingProviders, DataService, WebWorkerService],
+  providers: [appRoutingProviders, DataService, SelectionService, WebWorkerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

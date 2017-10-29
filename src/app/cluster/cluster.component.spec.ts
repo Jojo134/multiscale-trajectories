@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DetailCompareComponent } from './detail-compare.component';
+import { ClusterComponent } from './cluster.component';
 
 describe('DetailCompareComponent', () => {
-  let component: DetailCompareComponent;
-  let fixture: ComponentFixture<DetailCompareComponent>;
+  let component: ClusterComponent;
+  let fixture: ComponentFixture<ClusterComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DetailCompareComponent ]
+      declarations: [ClusterComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DetailCompareComponent);
+    fixture = TestBed.createComponent(ClusterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

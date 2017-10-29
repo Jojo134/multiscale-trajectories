@@ -1,3 +1,14 @@
 <ng-progress [showSpinner]="false"></ng-progress>
-<h1>{{ title }}</h1>
+<!--<h1>{{ title }}</h1>-->
+<ul class="nav">
+    <li class="nav-item">
+        <a class="nav-link" [routerLink]="['']" [routerLinkActive]="['active']">Trajectory View</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/cluster']" [routerLinkActive]="['active']">Cluster View</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/compare']" [routerLinkActive]="['active']"> Compare View</a>
+    </li>
+</ul>
 <router-outlet></router-outlet>

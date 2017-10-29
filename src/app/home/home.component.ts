@@ -3,14 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { Http } from '@angular/http';
 import { NgProgress } from 'ngx-progressbar';
 import { WebWorkerService } from 'angular2-web-worker';
-import * as Baby from 'babyparse';
 import 'rxjs/Rx';
 import { Observable } from 'rxjs/Observable';
 import * as d3 from 'd3';
 import { Trajectory, TrajectoryViewType, QTree, AABB } from '../data-structures';
-import { MultiMatch, calcdiag, stringToColor, DataService } from '../shared';
-import * as weka from 'node-weka/lib/weka-lib.js';
-import * as arff from 'node-arff';
+import { MultiMatch, calcdiag, stringToColor, DataService, SelectionService } from '../shared';
+
 import * as ml from 'machine_learning';
 import * as hamsters from 'hamsters.js';
 
@@ -23,6 +21,7 @@ export class HomeComponent implements OnInit {
 
   private chartData: Array<any>;
   nrLines: number;
+  minQuadsize = 20;
   simScores;
   dataLoaded = false;
   someRange = 5;
@@ -40,7 +39,7 @@ export class HomeComponent implements OnInit {
   qTree: QTree;
   simMatrix: number[][];
   constructor(public http: Http, public ngProgress: NgProgress,
-    private dataService: DataService, private webWorkerService: WebWorkerService) {
+    private dataService: DataService, private selectionService: SelectionService, private webWorkerService: WebWorkerService) {
     const boundary = new AABB({ x: 50, y: 50 }, 50);
     this.qTree = new QTree(new AABB({ x: 50, y: 50 }, 50), 20);
 
@@ -89,27 +88,24 @@ export class HomeComponent implements OnInit {
   computeSimScores() {
     const simScores = [];
     //console.log(data);
-    //this.ngProgress.start();
+    this.ngProgress.start();
     const mm = new MultiMatch();
     console.log('start mm');
-    let combinations = [];
-    for (let i = 0; i < this.fix_data.length; i++) {
+    for (let i = 0; i < this.filteredFixData.length; i++) {
       simScores[i] = [];
-      for (let k = i + 1; k < this.fix_data.length; k++) {
-        combinations.push({ p1: i, p2: k });
+      for (let k = i + 1; k < this.filteredFixData.length; k++) {
         simScores[i][k] = {
-          p1: this.fix_data[i].participant,
-          s1: this.fix_data[i].stimulus,
-          p2: this.fix_data[k].participant,
-          s2: this.fix_data[k].stimulus,
-          scores: mm.compare(this.fix_data[i].points, this.fix_data[k].points, calcdiag(1651, 1200)),
+          p1: this.filteredFixData[i].participant,
+          s1: this.filteredFixData[i].stimulus,
+          p2: this.filteredFixData[k].participant,
+          s2: this.filteredFixData[k].stimulus,
+          scores: mm.compare(this.filteredFixData[i].points, this.filteredFixData[k].points, calcdiag(1651, 1200)),
           cluster: 'none'
         };
-        // this.ngProgress.set((i * k) / ((data.length * data.length) / 2));
+        this.ngProgress.set((i * k) / ((this.filteredFixData.length * this.filteredFixData.length) / 2));
       }
 
     }
-    console.log(combinations.length);
     this.ngProgress.done();
     return simScores;
   }
@@ -216,23 +212,27 @@ export class HomeComponent implements OnInit {
   filterChangeParticipant(selected: any[]) {
     console.log(selected);
     this.selected_participants = selected;
+    this.selectionService.setSelectedParticipants(selected);
     this.filterData();
   }
 
   filterChangeStimuli(selected: any[]) {
     console.log(selected);
     this.selected_stimuli = selected;
+    this.selectionService.setSelectedStimuli(selected);
     this.filterData();
   }
 
-  generateData() {
-    this.chartData = [];
-    for (let i = 0; i < (8 + Math.floor(Math.random() * 10)); i++) {
-      this.chartData.push([
-        `Index ${i}`,
-        Math.floor(Math.random() * 100)
-      ]);
-    }
+  generateTree() {
+    console.log(this.minQuadsize)
+    console.log(this.fix_data);
+    this.fix_data = this.fix_data.map(d => {
+      const resolutionname = this.stimulNameToResName(d.stimulus);
+      const currentres = this.retrieveDimension(resolutionname);
+      d.genQtree(currentres[0].height, currentres[0].width, this.minQuadsize);
+      return d;
+    });
+    console.log(this.fix_data)
   }
 
 
