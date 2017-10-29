@@ -9,10 +9,34 @@ export class DataService {
   stimuli: { name: string; id: number; }[];
   participants: { name: string; id: number; }[];
   fix_data: Array<Trajectory> = [];
+  resolutionName = '/assets/resolution.txt';
+  filenameall = 'assets/all_fixation_data_cleaned_up.csv';
+  filename = 'assets/small_fix_data_cleaned.csv';
+  dataLoaded = false;
   constructor() { }
   getAllTrajectories() {
+    if (!this.dataLoaded) {
+      this.loadData(this.filename, this.resolutionName);
+    }
     console.log(this.fix_data);
     return this.fix_data;
+  }
+  getParticioants() {
+    if (!this.dataLoaded) {
+      this.loadData(this.filename, this.resolutionName);
+    }
+    return this.participants;
+  }
+  getStimuli() {
+    if (!this.dataLoaded) {
+      this.loadData(this.filename, this.resolutionName);
+    }
+    return this.stimuli;
+  }
+  loadData(trajname: string, resname: string) {
+    this.loadResolution(resname);
+    this.loadTrajectories(trajname);
+    this.dataLoaded = true;
   }
   loadTrajectories(filename: string) {
     d3.tsv(filename, (err, data) => {
@@ -56,7 +80,7 @@ export class DataService {
     const stimuSplit = stimuName.split('_');
     return stimuSplit.slice(1, stimuSplit.length - 1).join(' ');
   }
-  getResolution(filename) {
+  loadResolution(filename) {
     d3.tsv(filename, (err, data) => {
       data.forEach(d => {
         this.resolutions.push({ city: d.city, height: +d.height, width: +d.width });

@@ -13,7 +13,11 @@
       <hr>
       <hr>
       <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
+      <button (click)="computeSimScores()">simScores</button>
+      <button (click)="cluster()">Cluster</button>
+      <button (click)="showSimMarix()">simMatrix</button>
     </div>
+
     <app-trajview1 class="col-sm-9" *ngIf="filteredFixData.length !== 0" [data]="filteredFixData"></app-trajview1>
   </div>
 </div>
