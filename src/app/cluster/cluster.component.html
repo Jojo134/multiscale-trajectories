@@ -17,6 +17,6 @@
       <button (click)="cluster()">Cluster</button>
     </div>
 
-    <app-trajview1 class="col-sm-9" *ngIf="filteredFixData.length !== 0" [data]="filteredFixData"></app-trajview1>
+    <app-trajview1 class="col-sm-9" *ngIf="filteredFixData.length !== 0" [quadLines]="viewAsQuadtree" [nrLines]="nrLines" [data]="filteredFixData"></app-trajview1>
   </div>
 </div>

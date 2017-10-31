@@ -73,18 +73,6 @@ export class Trajview1Component implements OnInit, OnChanges {
       .append('g')
       .attr('transform',
       'translate(' + this.margin.left + ',' + this.margin.top + ')');
-    if (this.quadLines) {
-      this.svg.append('g')
-        .attr('class', 'grid')
-        .attr('transform', 'translate(0,' + this.height + ')')
-        .call(this.make_x_axis(this.nrLines)
-          .tickSize(-this.height));
-
-      this.svg.append('g')
-        .attr('class', 'grid')
-        .call(this.make_y_axis(this.nrLines)
-          .tickSize(-this.width));
-    }
   }
 
   drawTraj(points, color) {
@@ -109,6 +97,21 @@ export class Trajview1Component implements OnInit, OnChanges {
       .attr('fill', 'none')
       .attr('d', d => this.linefunc1(d.points))
       .attr('stroke', d => d.color);
+    if (this.quadLines) {
+      this.svg.append('g')
+        .attr('class', 'grid')
+        .attr('transform', 'translate(0,' + this.height + ')')
+        .call(this.make_x_axis(this.nrLines)
+          .tickSize(-this.height));
+
+      this.svg.append('g')
+        .attr('class', 'grid')
+        .call(this.make_y_axis(this.nrLines)
+          .tickSize(-this.width));
+    } else {
+      this.svg.selectAll('.grid')
+        .attr('display', 'none');
+    }
     // this.drawPoints();
   }
   drawPoints() {

@@ -60,8 +60,9 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName);
-
+    if (!this.dataService.dataLoaded) {
+      this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName);
+    }
     this.selected_stimuli = this.selectionService.getSelectedSimuli();
     this.selected_participants = this.selectionService.getSelectedParticipants();
     this.participants = this.dataService.getParticioants();

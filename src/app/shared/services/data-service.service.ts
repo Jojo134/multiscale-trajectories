@@ -77,13 +77,9 @@ export class DataService {
   }
 
   loadData(trajname: string, resname: string) {
-    return new Promise((resolve) => {
-      this.loadResolution(resname);
-      this.loadTrajectories(trajname);
-      this.dataLoaded = true;
-      resolve(true);
-    });
-
+    this.loadResolution(resname);
+    this.loadTrajectories(trajname);
+    this.dataLoaded = true;
   }
   loadTrajectories(filename: string) {
     d3.tsv(filename, (err, data) => {
