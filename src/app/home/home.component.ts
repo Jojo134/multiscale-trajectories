@@ -9,7 +9,6 @@ import * as d3 from 'd3';
 import { Trajectory, TrajectoryViewType, QTree, AABB } from '../data-structures';
 import { MultiMatch, calcdiag, stringToColor, DataService, SelectionService } from '../shared';
 
-import * as ml from 'machine_learning';
 import * as hamsters from 'hamsters.js';
 
 @Component({
@@ -23,7 +22,6 @@ export class HomeComponent implements OnInit {
   nrLines: number;
   minQuadsize = 20;
   simScores;
-  dataLoaded = false;
   someRange = 5;
   participants = [];
   stimuli = [];
@@ -53,62 +51,7 @@ export class HomeComponent implements OnInit {
     // console.log(this.qTree.queryRange(boundary));
     // console.log('ragnequery traj', this.qTree.queryRangeTrajectory(boundary));
   }
-  cluster() {
 
-    this.simScores = this.computeSimScores();
-    console.log('sim scores done');
-    const data = [];
-    this.ngProgress.start();
-    for (let i = 0; i < this.fix_data.length; i++) {
-      for (let k = i + 1; k < this.fix_data.length; k++) {
-        data.push(Object.values(this.simScores[i][k].scores));
-      }
-      this.ngProgress.set(i / this.fix_data.length);
-    }
-    this.ngProgress.done();
-    console.log('data transform done');
-    console.log(data);
-    this.ngProgress.start();
-    const result = ml.kmeans.cluster({
-      data: data,
-      //k: data.length > 20 ? 20 : data.length,
-      k: 4,
-      epochs: 50,
-      distance: { type: 'euclidean' }
-    });
-    this.ngProgress.done();
-    // arrfjson {header:{ relation: , attributes:[{},{}],data:[{},{}]}}}
-    // list participant, stimuli as nominal
-    console.log('clusters : ', result.clusters);
-    console.log('means : ', result.means);
-    // console.log(simScores);
-    // console.log(JSON.stringify(simScores));
-
-  }
-  computeSimScores() {
-    const simScores = [];
-    //console.log(data);
-    this.ngProgress.start();
-    const mm = new MultiMatch();
-    console.log('start mm');
-    for (let i = 0; i < this.filteredFixData.length; i++) {
-      simScores[i] = [];
-      for (let k = i + 1; k < this.filteredFixData.length; k++) {
-        simScores[i][k] = {
-          p1: this.filteredFixData[i].participant,
-          s1: this.filteredFixData[i].stimulus,
-          p2: this.filteredFixData[k].participant,
-          s2: this.filteredFixData[k].stimulus,
-          scores: mm.compare(this.filteredFixData[i].points, this.filteredFixData[k].points, calcdiag(1651, 1200)),
-          cluster: 'none'
-        };
-        this.ngProgress.set((i * k) / ((this.filteredFixData.length * this.filteredFixData.length) / 2));
-      }
-
-    }
-    this.ngProgress.done();
-    return simScores;
-  }
   showSimMarix() {
     const mm = new MultiMatch();
     const trs = this.fix_data.filter(t => t.stimulus === '01_Antwerpen_S1.jpg').map(t => t.points);
@@ -116,124 +59,37 @@ export class HomeComponent implements OnInit {
     this.simMatrix = mm.simMatrix;
   }
 
-  filterData() {
-    this.filteredFixData = [];
-    const prefilteredFixData = this.fix_data.filter(traj => {
-      return this.selected_participants.filter(e => e.name === traj.participant).length > 0
-        || this.selected_stimuli.filter(e => e.name === traj.stimulus).length > 0;
-    });
-    if (this.viewAsQuadtree) {
-      console.log('going quad');
-      this.filteredFixData = prefilteredFixData.map(traj => {
-        return {
-          stimulus: traj.stimulus, participant: traj.participant, color: traj.color,
-          points: traj.qTree.getPointsForLevel(this.someRange).filter(n => n).sort((a, b) => a.timestamp - b.timestamp)
-        };
-      });
-    } else {
-      this.filteredFixData = prefilteredFixData;
-    }
-    console.log(this.filteredFixData);
-    this.removeOutliers();
-  }
-
-  stimulNameToResName(stimuName: string) {
-    const stimuSplit = stimuName.split('_');
-    return stimuSplit.slice(1, stimuSplit.length - 1).join(' ');
-  }
-  removeOutliers() {
-    this.filteredFixData = this.filteredFixData.filter(traj => {
-      const resolutionname = this.stimulNameToResName(traj.stimulus);
-      const data_resolution = this.retrieveDimension(resolutionname);
-      return traj.points.every(p => {
-        return p.x > 0 && p.x < data_resolution[0].width
-          && p.y > 0 && p.y < data_resolution[0].height;
-      });
-    });
-  }
-  retrieveDimension(resolutionname: string) {
-    return this.resolutions.filter(res => res.city === resolutionname);
-  }
-  getTrajectories() {
-    d3.tsv(this.filename, (err, data) => {
-      // console.log(data);
-      const users = new Set(Array.from(data, o => o.user));
-      this.participants = Array.from(users).map((u, index) => ({ name: u, id: index }));
-      const StimuliName = new Set(Array.from(data, o => o.StimuliName));
-      this.stimuli = Array.from(StimuliName).map((s, index) => ({ name: s, id: index }));
-      users.forEach(user => {
-        StimuliName.forEach(stimu => {
-
-          const result = data.filter(d => {
-            return d.StimuliName === stimu && d.user === user;
-          });
-          if (result.length) {
-            const resolutionname = this.stimulNameToResName(stimu);
-            const currentres = this.retrieveDimension(resolutionname);
-            const nTrajectory = new Trajectory();
-            nTrajectory.participant = user;
-            nTrajectory.stimulus = stimu;
-            nTrajectory.color = stringToColor.next(user);
-            nTrajectory.points = result.map(d => {
-              return {
-                x: +d.MappedFixationPointX,
-                y: +d.MappedFixationPointY,
-                duration: +d.FixationDuration,
-                timestamp: +d.Timestamp,
-                index: +d.FixationIndex
-              };
-            });
-            nTrajectory.points = nTrajectory.points.sort((a, b) => a.timestamp - b.timestamp);
-            nTrajectory.genQtree(currentres[0].height, currentres[0].width, 20);
-            this.fix_data.push(nTrajectory);
-          }
-        });
-      });
-      //  console.log(this.fix_data);
-    });
-  }
-
-  getResolution() {
-    d3.tsv(this.resolutionName, (err, data) => {
-      data.forEach(d => {
-        this.resolutions.push({ city: d.city, height: +d.height, width: +d.width });
-      });
-    });
-  }
-
   ngOnInit() {
-    // this.dataService.getResolution(this.resolutionName);
-    // this.dataService.loadTrajectories(this.filename);
-    this.getResolution();
-    this.getTrajectories();
-    // d3.queue().defer(this.getResolution).await(this.getTrajectories)
+    this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName);
+
+    this.selected_stimuli = this.selectionService.getSelectedSimuli();
+    this.selected_participants = this.selectionService.getSelectedParticipants();
+    this.participants = this.dataService.getParticioants();
+    this.stimuli = this.dataService.getStimuli();
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
   }
 
   filterChangeParticipant(selected: any[]) {
     console.log(selected);
     this.selected_participants = selected;
     this.selectionService.setSelectedParticipants(selected);
-    this.filterData();
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
   }
 
   filterChangeStimuli(selected: any[]) {
     console.log(selected);
     this.selected_stimuli = selected;
     this.selectionService.setSelectedStimuli(selected);
-    this.filterData();
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
   }
-
+  filterData() {
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
+  }
   generateTree() {
-    console.log(this.minQuadsize)
-    console.log(this.fix_data);
-    this.fix_data = this.fix_data.map(d => {
-      const resolutionname = this.stimulNameToResName(d.stimulus);
-      const currentres = this.retrieveDimension(resolutionname);
-      d.genQtree(currentres[0].height, currentres[0].width, this.minQuadsize);
-      return d;
-    });
-    console.log(this.fix_data)
+    this.dataService.generateTree(this.minQuadsize);
   }
 
-
+  dataLoaded() {
+    return this.dataService.dataLoaded;
+  }
 }

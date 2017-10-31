@@ -1,5 +1,5 @@
 <h1>Trajectory View</h1>
-<div class="container-fluid">
+<div *ngIf="dataLoaded()" class="container-fluid">
   <div class="row">
     <div class="col-sm-3">
       <div class="row">
@@ -9,16 +9,12 @@
       </div>
       <md-checkbox (ngModelChange)="filterData()" [(ngModel)]="viewAsQuadtree">View as Quadtree</md-checkbox>
       <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="1" [max]="8" [(ngModel)]="someRange"></nouislider>
-
-      <button (click)="filterData()">Filter</button>
       <hr>
       <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
       <hr>
       <hr>
       <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
       <!--<app-trajview class="offset-3 col-9" *ngIf="chartData" [data]="chartData"></app-trajview>-->
-      <button (click)="computeSimScores()">simScores</button>
-      <button (click)="cluster()">Cluster</button>
       <button (click)="showSimMarix()">simMatrix</button>
       <app-sim-matrix [simMatrix]="simMatrix" [labels]="labels"></app-sim-matrix>
     </div>

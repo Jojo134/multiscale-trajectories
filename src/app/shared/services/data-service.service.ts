@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Trajectory, TrajectoryViewType, QTree, AABB } from '../../data-structures';
 import { stringToColor } from '../util';
+import { SelectionService } from './selection.service';
 import * as d3 from 'd3';
 
 @Injectable()
@@ -13,7 +14,7 @@ export class DataService {
   filenameall = 'assets/all_fixation_data_cleaned_up.csv';
   filename = 'assets/small_fix_data_cleaned.csv';
   dataLoaded = false;
-  constructor() { }
+  constructor(private selectionSerivce: SelectionService) { }
   getAllTrajectories() {
     if (!this.dataLoaded) {
       this.loadData(this.filename, this.resolutionName);
@@ -33,10 +34,56 @@ export class DataService {
     }
     return this.stimuli;
   }
+  filterData(quadConfig: { asQuad: boolean, level?: number }) {
+    let filteredFixData = [];
+    const prefilteredFixData = this.fix_data.filter(traj => {
+      return this.selectionSerivce.getSelectedParticipants().filter(e => e.name === traj.participant).length > 0
+        || this.selectionSerivce.getSelectedSimuli().filter(e => e.name === traj.stimulus).length > 0;
+    });
+    if (quadConfig.asQuad) {
+      console.log('going quad');
+      filteredFixData = prefilteredFixData.map(traj => {
+        return {
+          stimulus: traj.stimulus, participant: traj.participant, color: traj.color,
+          points: traj.qTree.getPointsForLevel(quadConfig.level).filter(n => n).sort((a, b) => a.timestamp - b.timestamp)
+        };
+      });
+    } else {
+      filteredFixData = prefilteredFixData;
+    }
+    console.log(filteredFixData);
+    return this.removeOutliers(filteredFixData);
+  }
+  removeOutliers(data) {
+    const filteredFixData = data.filter(traj => {
+      const resolutionname = this.stimulNameToResName(traj.stimulus);
+      const data_resolution = this.retrieveDimension(resolutionname);
+      return traj.points.every(p => {
+        return p.x > 0 && p.x < data_resolution[0].width
+          && p.y > 0 && p.y < data_resolution[0].height;
+      });
+    });
+    return filteredFixData;
+  }
+  generateTree(minQuadsize: number) {
+    console.log(this.fix_data);
+    this.fix_data = this.fix_data.map(d => {
+      const resolutionname = this.stimulNameToResName(d.stimulus);
+      const currentres = this.retrieveDimension(resolutionname);
+      d.genQtree(currentres[0].height, currentres[0].width, minQuadsize);
+      return d;
+    });
+    console.log(this.fix_data);
+  }
+
   loadData(trajname: string, resname: string) {
-    this.loadResolution(resname);
-    this.loadTrajectories(trajname);
-    this.dataLoaded = true;
+    return new Promise((resolve) => {
+      this.loadResolution(resname);
+      this.loadTrajectories(trajname);
+      this.dataLoaded = true;
+      resolve(true);
+    });
+
   }
   loadTrajectories(filename: string) {
     d3.tsv(filename, (err, data) => {
@@ -73,6 +120,7 @@ export class DataService {
           }
         });
       });
+      this.dataLoaded = true;
       //  console.log(this.fix_data);
     });
   }
