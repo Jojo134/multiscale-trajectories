@@ -8,7 +8,7 @@ import { NgProgressModule } from 'ngx-progressbar';
 import { WebWorkerService } from 'angular2-web-worker';
 
 import { AppComponent } from './app.component';
-import { TrajviewComponent } from './shared/trajview/trajview.component';
+import { BarChartComponent } from './shared/barchart/barchart.component';
 import { Trajview1Component } from './shared/trajview.1/trajview.component';
 
 import { HomeComponent } from './home/home.component';
@@ -23,7 +23,7 @@ import { DataService, SelectionService } from './shared';
 @NgModule({
   declarations: [
     AppComponent,
-    TrajviewComponent,
+    BarChartComponent,
     Trajview1Component,
     HomeComponent,
     MultiselectComponent,

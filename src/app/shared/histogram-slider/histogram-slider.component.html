@@ -1,4 +1,5 @@
 <p>
   histogram-slider works!
 </p>
-<div id="vis"></div>
+<app-barchart *ngIf="chartData" [data]="chartData"></app-barchart>
+<nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="1" [max]="8" [(ngModel)]="someRange"></nouislider>

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TrajviewComponent } from './trajview.component';
+import { BarChartComponent } from './trajview.component';
 
 describe('TrajviewComponent', () => {
-  let component: TrajviewComponent;
-  let fixture: ComponentFixture<TrajviewComponent>;
+  let component: BarChartComponent;
+  let fixture: ComponentFixture<BarChartComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TrajviewComponent ]
+      declarations: [BarChartComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TrajviewComponent);
+    fixture = TestBed.createComponent(BarChartComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

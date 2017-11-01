@@ -1,4 +1,4 @@
 export * from './trajview.1';
-export * from './trajview';
+export * from './barchart';
 export * from './util';
 export * from './services';

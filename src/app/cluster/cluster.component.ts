@@ -13,6 +13,7 @@ import * as ml from 'machine_learning';
 export class ClusterComponent implements OnInit {
   someRange = 3;
   private chartData: Array<any>;
+
   nrLines: number;
   minQuadsize = 20;
   simScores;
@@ -28,7 +29,11 @@ export class ClusterComponent implements OnInit {
   resolutions: Array<{ city: string, height: number, width: number }> = [];
   qTree: QTree;
   simMatrix: number[][];
-  constructor(public ngProgress: NgProgress, private selectionService: SelectionService, private dataService: DataService) { }
+  constructor(public ngProgress: NgProgress, private selectionService: SelectionService, private dataService: DataService) {
+    let data = [['Index 0', 0.1], ['Index 1', 0.2], ['Index 2', 0.3], ['Index 3', 0.4],
+    ['Index 4', 0.5], ['Index 5', 0.6], ['Index 6', 0.7], ['Index 7', 0.8], ['Index 8', 0.9], ['Index 9', 1]];
+    this.chartData = data;
+  }
 
   ngOnInit() {
     if (!this.dataService.dataLoaded) {
@@ -39,8 +44,14 @@ export class ClusterComponent implements OnInit {
     this.participants = this.dataService.getParticioants();
     this.stimuli = this.dataService.getStimuli();
     this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
-  }
 
+  }
+  generateData() {
+    this.chartData = [];
+    for (let i = 0; i < (8 + Math.floor(Math.random() * 10)); i++) {
+      this.chartData.push([`Index ${i}`, Math.floor(Math.random() * 100)]);
+    }
+  }
   filterChangeParticipant(selected: any[]) {
     console.log(selected);
     this.selected_participants = selected;
@@ -72,8 +83,8 @@ export class ClusterComponent implements OnInit {
     const result = ml.kmeans.cluster({
       data: data,
       //k: data.length > 20 ? 20 : data.length,
-      k: 4,
-      epochs: 50,
+      k: 2,
+      epochs: 100,
       distance: { type: 'euclidean' }
     });
     this.ngProgress.done();
@@ -81,9 +92,16 @@ export class ClusterComponent implements OnInit {
     // list participant, stimuli as nominal
     console.log('clusters : ', result.clusters);
     console.log('means : ', result.means);
+    result.clusters.forEach(element => {
+      element.forEach(e => console.log(this.findCorrespondingPair(e)));
+    });
     // console.log(simScores);
     // console.log(JSON.stringify(simScores));
-
+  }
+  findCorrespondingPair(clusterIndex: number) {
+    const row = clusterIndex % this.simScores.length;
+    const col = clusterIndex / this.simScores[0].length;
+    return this.simScores[row][col + row];
   }
   computeSimScores() {
     const simScores = [];
