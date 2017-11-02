@@ -16,8 +16,8 @@ export class CompareComponent implements OnInit {
   nrLines: number;
   minQuadsize = 20;
   simScores;
-  participants = [];
-  stimuli = [];
+  stimuli2 = [];
+  stimuli1 = [];
   viewAsQuadtree: boolean;
   selected_participants = Array<{ name: string, id: number }>();
   selected_stimuli = Array<{ name: string, id: number }>();
@@ -41,28 +41,16 @@ export class CompareComponent implements OnInit {
     }
     this.selected_stimuli = this.selectionService.getSelectedSimuli();
     this.selected_participants = this.selectionService.getSelectedParticipants();
-    this.participants = this.dataService.getParticioants();
-    this.stimuli = this.dataService.getStimuli();
+
     this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
+    this.stimuli1 = this.filteredFixData.map((d, i) => ({ id: i, name: d.participant + ' ' + d.stimulus }));
+    this.stimuli2 = this.filteredFixData.map((d, i) => ({ id: i, name: d.participant + ' ' + d.stimulus }));
   }
   generateData() {
     this.chartData = [];
     for (let i = 0; i < (8 + Math.floor(Math.random() * 10)); i++) {
       this.chartData.push([`Index ${i}`, Math.floor(Math.random() * 100)]);
     }
-  }
-  filterChangeParticipant(selected: any[]) {
-    console.log(selected);
-    this.selected_participants = selected;
-    this.selectionService.setSelectedParticipants(selected);
-    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
-  }
-
-  filterChangeStimuli(selected: any[]) {
-    console.log(selected);
-    this.selected_stimuli = selected;
-    this.selectionService.setSelectedStimuli(selected);
-    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
   }
 
   findCorrespondingPair(clusterIndex: number) {

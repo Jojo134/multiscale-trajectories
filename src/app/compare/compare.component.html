@@ -11,11 +11,18 @@
         <input readonly [value]="minQuadsize" id="minSize" type="number">
       </div>
       <md-checkbox [(ngModel)]="viewAsQuadtree">View as Quadtree</md-checkbox>
-      <button (click)="filterData()">Filter</button>
+      <select class="col-12">
+        <option *ngFor="let s of stimuli1" [value]="s.id">{{s.name}}</option>
+      </select>
+      <select class="col-12">
+
+        <option *ngFor="let s of stimuli2" [value]="s.id">{{s.name}}</option>
+      </select>
       <hr>
       <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
       <hr>
       <hr>
+
       <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
       <button (click)="cluster()">Cluster</button>
 
