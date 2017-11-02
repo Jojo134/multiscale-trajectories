@@ -5,7 +5,8 @@ import { Trajectory, TrajectoryViewType } from '../../data-structures';
 @Component({
   selector: 'app-trajview1',
   templateUrl: './trajview.component.html',
-  styleUrls: ['./trajview.component.css']
+  styleUrls: ['./trajview.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class Trajview1Component implements OnInit, OnChanges {
   @ViewChild('chart1') private chartContainer: ElementRef;

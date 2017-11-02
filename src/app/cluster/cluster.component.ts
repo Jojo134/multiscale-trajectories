@@ -30,7 +30,7 @@ export class ClusterComponent implements OnInit {
   qTree: QTree;
   simMatrix: number[][];
   constructor(public ngProgress: NgProgress, private selectionService: SelectionService, private dataService: DataService) {
-    let data = [['Index 0', 0.1], ['Index 1', 0.2], ['Index 2', 0.3], ['Index 3', 0.4],
+    const data = [['Index 0', 0.1], ['Index 1', 0.2], ['Index 2', 0.3], ['Index 3', 0.4],
     ['Index 4', 0.5], ['Index 5', 0.6], ['Index 6', 0.7], ['Index 7', 0.8], ['Index 8', 0.9], ['Index 9', 1]];
     this.chartData = data;
   }
@@ -82,7 +82,7 @@ export class ClusterComponent implements OnInit {
     this.ngProgress.start();
     const result = ml.kmeans.cluster({
       data: data,
-      //k: data.length > 20 ? 20 : data.length,
+      // k: data.length > 20 ? 20 : data.length,
       k: 2,
       epochs: 100,
       distance: { type: 'euclidean' }

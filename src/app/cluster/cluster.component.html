@@ -1,7 +1,7 @@
 <h1>Cluster View</h1>
 <div *ngIf="dataLoaded()" class="container-fluid">
   <div class="row">
-    <div class="col-sm-3">
+    <div class="col-sm-6">
 
       <app-histogram-slider></app-histogram-slider>
       <div class="row">
@@ -20,6 +20,6 @@
     </div>
     <!--<app-trajview *ngIf="data" [data]="data"></app-trajview>
     -->
-    <app-trajview1 class="col-sm-9" *ngIf="filteredFixData.length !== 0" [quadLines]="viewAsQuadtree" [nrLines]="nrLines" [data]="filteredFixData"></app-trajview1>
+    <app-trajview1 class="col-sm-6" *ngIf="filteredFixData.length !== 0" [quadLines]="viewAsQuadtree" [nrLines]="nrLines" [data]="filteredFixData"></app-trajview1>
   </div>
 </div>
