@@ -1,0 +1,25 @@
+<h1>Compare View</h1>
+<div *ngIf="dataLoaded()" class="container-fluid">
+  <div class="row">
+    <div class="col-sm-6">
+
+      <app-histogram-slider></app-histogram-slider>
+      <div class="row">
+        <label for="minSize">minimum quad size</label>
+        <input readonly [value]="minQuadsize" id="minSize" type="number">
+      </div>
+      <md-checkbox [(ngModel)]="viewAsQuadtree">View as Quadtree</md-checkbox>
+      <button (click)="filterData()">Filter</button>
+      <hr>
+      <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
+      <hr>
+      <hr>
+      <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
+      <button (click)="cluster()">Cluster</button>
+
+    </div>
+    <!--<app-trajview *ngIf="data" [data]="data"></app-trajview>
+    -->
+    <app-trajview1 class="col-sm-6" *ngIf="filteredFixData.length !== 0" [quadLines]="viewAsQuadtree" [nrLines]="nrLines" [data]="filteredFixData"></app-trajview1>
+  </div>
+</div>

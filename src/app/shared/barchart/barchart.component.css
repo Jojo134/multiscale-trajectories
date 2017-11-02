@@ -3,26 +3,3 @@
   height: 7em;
 }
  
-.d3-chart .axis path,
-.d3-chart .axis line {
-  stroke: #999;
-}
- 
-.d3-chart .axis text {
-  fill: #999;
-}
-
-.line {
-    fill: none;
-    stroke-width: 2px;
-  }
-  
-.grid line {
-    stroke: lightgrey;
-    stroke-opacity: 0.7;
-    shape-rendering: crispEdges;
-  }
-  
-.grid path {
-    stroke-width: 0;
-  }

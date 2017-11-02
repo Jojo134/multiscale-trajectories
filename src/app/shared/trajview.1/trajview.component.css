@@ -21,7 +21,7 @@
   }
   
   .grid line {
-    stroke: lightgrey;
+    stroke: lightpink;
     stroke-opacity: 0.7;
     shape-rendering: crispEdges;
   }

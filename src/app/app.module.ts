@@ -19,6 +19,7 @@ import { ClusterComponent } from './cluster/cluster.component';
 import { HistogramSliderComponent } from './shared/histogram-slider/histogram-slider.component';
 import { SimMatrixComponent } from './shared/sim-matrix/sim-matrix.component';
 import { DataService, SelectionService } from './shared';
+import { CompareComponent } from './compare/compare.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { DataService, SelectionService } from './shared';
     MultiselectComponent,
     ClusterComponent,
     HistogramSliderComponent,
-    SimMatrixComponent
+    SimMatrixComponent,
+    CompareComponent
   ],
   imports: [
     BrowserModule, NouisliderModule, MdCheckboxModule, BrowserAnimationsModule,
