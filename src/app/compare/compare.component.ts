@@ -12,7 +12,7 @@ import { QTree, Trajectory, TrajectoryViewType } from '../data-structures';
 export class CompareComponent implements OnInit {
   someRange = 3;
   private chartData: Array<any>;
-
+  cutPoints: [number, number];
   nrLines: number;
   minQuadsize = 20;
   simScores;
@@ -36,6 +36,7 @@ export class CompareComponent implements OnInit {
 
   ngOnInit() {
     if (!this.dataService.dataLoaded) {
+      console.log('load data');
       this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName);
     }
     this.selected_stimuli = this.selectionService.getSelectedSimuli();
@@ -43,7 +44,6 @@ export class CompareComponent implements OnInit {
     this.participants = this.dataService.getParticioants();
     this.stimuli = this.dataService.getStimuli();
     this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
-
   }
   generateData() {
     this.chartData = [];
@@ -92,6 +92,12 @@ export class CompareComponent implements OnInit {
     }
     this.ngProgress.done();
     return simScores;
+  }
+  cutTraj() {
+
+  }
+  values(v) {
+    this.cutPoints = v;
   }
   dataLoaded() {
     return this.dataService.dataLoaded;

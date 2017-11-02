@@ -3,7 +3,9 @@
   <div class="row">
     <div class="col-sm-6">
 
-      <app-histogram-slider></app-histogram-slider>
+      <app-histogram-slider [data]="chartData" (selectedValues)="values($event)"></app-histogram-slider>
+      <button (click)="cutTraj()">Cut</button>
+      <button (click)="generateData()">ChangeHistoData</button>
       <div class="row">
         <label for="minSize">minimum quad size</label>
         <input readonly [value]="minQuadsize" id="minSize" type="number">
@@ -18,8 +20,6 @@
       <button (click)="cluster()">Cluster</button>
 
     </div>
-    <!--<app-trajview *ngIf="data" [data]="data"></app-trajview>
-    -->
     <app-trajview1 class="col-sm-6" *ngIf="filteredFixData.length !== 0" [quadLines]="viewAsQuadtree" [nrLines]="nrLines" [data]="filteredFixData"></app-trajview1>
   </div>
 </div>
