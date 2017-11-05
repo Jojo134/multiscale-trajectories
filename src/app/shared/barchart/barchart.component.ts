@@ -11,7 +11,7 @@ export class BarChartComponent implements OnInit, OnChanges {
   @ViewChild('chart') private chartContainer: ElementRef;
   @Input() private data: Array<any>;
 
-  private margin: any = { top: 2, bottom: 2, left: 20, right: 2 };
+  private margin: any = { top: 5, bottom: 5, left: 20, right: 7 };
   private chart: any;
   private width: number;
   private height: number;
@@ -41,16 +41,16 @@ export class BarChartComponent implements OnInit, OnChanges {
     // this.width = element.offsetWidth - this.margin.left - this.margin.right;
     // this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
     this.width = 500 - this.margin.left - this.margin.right;
-    this.height = 50;
+    this.height = 50 - this.margin.top - this.margin.bottom;
 
     const svg = d3.select(element).append('svg')
       .attr('preserveAspectRatio', 'xMinYMin meet')
-      .attr('viewBox', '0 0 500 50');
+      .attr('viewBox', '0 0 500 65');
 
     // chart plot area
     this.chart = svg.append('g')
-      .attr('class', 'bars');
-
+      .attr('class', 'bars')
+      .attr('transform', `translate(${0}, ${this.margin.top})`);
     // define X & Y domains
     const xDomain = [0, this.data.length - 1];
     const yDomain = [0, d3.max(this.data, d => d[1])];
@@ -62,14 +62,14 @@ export class BarChartComponent implements OnInit, OnChanges {
     // bar colors
     this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>['red', 'blue']);
     // x & y axis
-    //this.xAxis = svg.append('g')
-    //.attr('class', 'axis axis-x')
-    //.attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`);
-    // .call(d3.axisBottom(this.xScale));
+    this.xAxis = svg.append('g')
+      .attr('class', 'axis axis-x')
+      .attr('transform', `translate(${0}, ${this.margin.top + this.height})`)
+      .call(d3.axisBottom(this.xScale));
     this.yAxis = svg.append('g')
       .attr('class', 'axis axis-y')
       .attr('transform', `translate(${this.width}, ${this.margin.top})`)
-      .call(d3.axisRight(this.yScale));
+      .call(d3.axisRight(this.yScale).ticks(5));
 
   }
 
@@ -78,10 +78,9 @@ export class BarChartComponent implements OnInit, OnChanges {
     this.xScale.domain(this.data.map(d => d[0]));
     this.yScale.domain([0, d3.max(this.data, d => d[1])]);
     this.colors.domain([0, this.data.length]);
-    //this.xAxis.transition();
-    // .call(d3.axisBottom(this.xScale));
+    this.xAxis.transition().call(d3.axisBottom(this.xScale));
     this.yAxis.transition()
-      .call(d3.axisRight(this.yScale));
+      .call(d3.axisRight(this.yScale).ticks(5));
 
     const update = this.chart.selectAll('.bar')
       .data(this.data);
