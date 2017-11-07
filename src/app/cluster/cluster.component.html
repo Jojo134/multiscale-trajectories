@@ -7,17 +7,35 @@
         <input readonly [value]="minQuadsize" id="minSize" type="number">
       </div>
       <md-checkbox [(ngModel)]="viewAsQuadtree">View as Quadtree</md-checkbox>
-      <button (click)="filterData()">Filter</button>
+      <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="1" [max]="8" [(ngModel)]="someRange"></nouislider>
       <hr>
-      <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
-      <hr>
-      <hr>
-      <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
-      <button (click)="cluster()">Cluster</button>
-
+      <div class="row">
+        <app-multiselect class="col-6" [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
+        <hr>
+        <hr>
+        <app-multiselect class="col-6" [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <label for="epochs">Epochs</label>
+          <input name="epochs" [(ngModel)]="epochs" type="number">
+        </div>
+        <div class="col-6">
+          <label for="cluster">Cluster</label>
+          <input name="cluster" [max]="filteredFixData.length" [(ngModel)]="k" type="number">
+        </div>
+        <button class="col-12" (click)="cluster()">Cluster</button>
+      </div>
+      <div class="row">
+        <app-multiselect class="col-6" [items]="cluster_list" (selectedItems)="filterChangeCluster($event)"></app-multiselect>
+        <hr>
+        <hr>
+        <app-multiselect class="col-6" [items]="clustered_stimuli" (selectedItems)="filterChangeClusterStimuli($event)"></app-multiselect>
+      </div>
     </div>
+
     <!--<app-trajview *ngIf="data" [data]="data"></app-trajview>
     -->
-    <app-trajview1 class="col-sm-6" *ngIf="filteredFixData.length !== 0" [quadLines]="viewAsQuadtree" [nrLines]="nrLines" [data]="filteredFixData"></app-trajview1>
+    <app-trajview1 class="col-sm-6" *ngIf="visibleData.length !== 0" [quadLines]="viewAsQuadtree" [nrLines]="nrLines" [data]="visibleData"></app-trajview1>
   </div>
 </div>
