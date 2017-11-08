@@ -11,7 +11,7 @@ export class BarChartComponent implements OnInit, OnChanges {
   @ViewChild('chart') private chartContainer: ElementRef;
   @Input() private data: Array<any>;
 
-  private margin: any = { top: 5, bottom: 5, left: 20, right: 7 };
+  private margin: any = { top: 5, bottom: 5, left: 20, right: 10 };
   private chart: any;
   private width: number;
   private height: number;
