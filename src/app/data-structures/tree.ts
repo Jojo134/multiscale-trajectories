@@ -24,7 +24,12 @@ export class QTree {
         this.minHalfDimension = minHalfDimension;
         this.currentLevel = currentLevel ? currentLevel : 0;
     }
-
+    getDepth() {
+        if (this.northWest == null) {
+            return this.currentLevel;
+        }
+        return Math.max(this.northWest.getDepth(), this.northEast.getDepth(), this.southEast.getDepth(), this.southWest.getDepth());
+    }
     getPoints(): PointType[] {
         return this.queryRangeTrajectory(this.boundary).map(e => e.sort((a, b) => a.timestamp - b.timestamp)).map(center_of_masst);
     }
