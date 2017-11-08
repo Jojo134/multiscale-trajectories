@@ -64,7 +64,22 @@ export class Trajview1Component implements OnInit, OnChanges {
     this.xScale = d3.scaleLinear().range([0, this.width]);
     this.yScale = d3.scaleLinear().range([this.height, 0]);
 
-    this.svg = d3.select(element).append('svg')
+    d3.select(element).append('svg');
+
+    /*    d3.select(element).select('svg').append('defs').append('marker')
+          .attr('id', 'markerarrow')
+          .attr('viewBox', '-0.5 -0.5 1 1')
+          .append('path')
+          .attr('d', 'M 0,0 m -5,-5 L 5,0 L -5,5 Z')
+          .attr('fill', '#2ca02c');
+        d3.select(element).select('svg').select('defs').append('marker')
+          .attr('id', 'markercircle')
+          .attr('viewbox', '-.6 -.6 1.2 1.2')
+          .append('path')
+          .attr('d', 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0')
+          .attr('fill', '#1f77b4');
+    */
+    this.svg = d3.select(element).select('svg')
       .attr('class', 'svg-element')
       .attr('preserveAspectRatio', 'xMinYMin meet')
       .attr('viewBox', '0 0 1700 1300')
@@ -74,6 +89,7 @@ export class Trajview1Component implements OnInit, OnChanges {
       .append('g')
       .attr('transform',
       'translate(' + this.margin.left + ',' + this.margin.top + ')');
+
   }
 
   drawTraj(points, color) {
@@ -97,7 +113,9 @@ export class Trajview1Component implements OnInit, OnChanges {
       .attr('stroke-width', 2)
       .attr('fill', 'none')
       .attr('d', d => this.linefunc1(d.points))
-      .attr('stroke', d => d.color);
+      .attr('stroke', d => d.color)
+      .attr('marker-start', 'url(#markerarrow)')
+      .attr('marker-end', 'url(#markercircle)');
     if (this.quadLines) {
       this.svg.append('g')
         .attr('class', 'grid')
@@ -113,10 +131,10 @@ export class Trajview1Component implements OnInit, OnChanges {
       this.svg.selectAll('.grid')
         .attr('display', 'none');
     }
-    // this.drawPoints();
+    this.drawPoints();
   }
   drawPoints() {
-    const update = this.svg.selectAll('.dot').data(...this.data.map(d => d.points));
+    const update = this.svg.selectAll('.dot').data(this.data.map(d => d['points'][0]));
     update.exit().transition().attr('r', 0).remove();
 
     update.enter().append('circle').attr('class', 'dot')
