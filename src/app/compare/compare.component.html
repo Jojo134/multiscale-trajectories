@@ -2,31 +2,26 @@
 <div *ngIf="dataLoaded()" class="container-fluid">
   <div class="row">
     <div class="col-sm-6">
-
-      <app-histogram-slider [data]="chartData" (selectedValues)="values($event)"></app-histogram-slider>
-      <button (click)="cutTraj()">Cut</button>
-      <button (click)="generateData()">ChangeHistoData</button>
-      <div class="row">
-        <label for="minSize">minimum quad size</label>
-        <input readonly [value]="minQuadsize" id="minSize" type="number">
+      <div>
+        <label>Trajectory 1</label>
+        <select [ngModel]="selected_stimuli1" (ngModelChange)="onChange1($event)" class="form-control col-12">
+          <option selected [ngValue]="undefined" *ngIf="filteredFixData.length === 0">Choose data in Cluster/Trajectory View</option>
+          <option *ngFor="let s of filteredFixData" [ngValue]="s">{{s.participant + ' ' + s.stimulus}}</option>
+        </select>
+        <label>Trajectory 2</label>
+        <select [ngModel]="selected_stimuli2" (ngModelChange)="onChange2($event)" class="form-control col-12">
+          <option selected [ngValue]="undefined" *ngIf="filteredFixData.length === 0">Choose data in Cluster/Trajectory View</option>
+          <option *ngFor="let s of filteredFixData" [ngValue]="s">{{s.participant + ' ' + s.stimulus}}</option>
+        </select>
       </div>
-      <md-checkbox [(ngModel)]="viewAsQuadtree">View as Quadtree</md-checkbox>
-      <select class="col-12">
-        <option *ngFor="let s of stimuli1" [value]="s.id">{{s.name}}</option>
-      </select>
-      <select class="col-12">
-
-        <option *ngFor="let s of stimuli2" [value]="s.id">{{s.name}}</option>
-      </select>
       <hr>
-      <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
-      <hr>
-      <hr>
-
-      <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
-      <button (click)="cluster()">Cluster</button>
-
+      <div>
+        <app-histogram-slider [data]="chartData1" (selectedValues)="values($event)"></app-histogram-slider>
+        <button class="btn" (click)="cutTraj('first')">Cut 1. Trajectory</button>
+        <app-histogram-slider [data]="chartData2" (selectedValues)="values($event)"></app-histogram-slider>
+        <button class="btn" (click)="cutTraj('second')">Cut 2. Trajectory</button>
+      </div>
     </div>
-    <app-trajview1 class="col-sm-6" *ngIf="filteredFixData.length !== 0" [quadLines]="viewAsQuadtree" [nrLines]="nrLines" [data]="filteredFixData"></app-trajview1>
+    <app-trajview1 class="col-sm-6" *ngIf="visibleData.length !== 0" [quadLines]="viewAsQuadtree" [nrLines]="nrLines" [data]="visibleData"></app-trajview1>
   </div>
 </div>
