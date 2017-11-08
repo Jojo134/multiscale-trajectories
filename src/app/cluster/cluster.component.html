@@ -24,7 +24,7 @@
           <label for="cluster">Cluster</label>
           <input name="cluster" [max]="filteredFixData.length" [(ngModel)]="k" type="number">
         </div>
-        <button class="col-12" (click)="cluster()">Cluster</button>
+        <button class="btn col-12" (click)="cluster()">Cluster</button>
       </div>
       <div class="row">
         <app-multiselect class="col-6" [items]="cluster_list" (selectedItems)="filterChangeCluster($event)"></app-multiselect>

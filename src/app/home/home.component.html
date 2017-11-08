@@ -5,17 +5,18 @@
       <div class="row">
         <label for="minSize">minimum quad size</label>
         <input class="col-6" [(ngModel)]="minQuadsize" name="minSize" id="minSize" type="number">
-        <button class="col-6" (click)="generateTree()">Gen Tree</button>
+        <button class="btn col-6" (click)="generateTree()">Gen Tree</button>
       </div>
       <md-checkbox (ngModelChange)="filterData()" [(ngModel)]="viewAsQuadtree">View as Quadtree</md-checkbox>
-      <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="1" [max]="8" [(ngModel)]="someRange"></nouislider>
+      <nouislider (ngModelChange)="filterData()" class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="1" [max]="8"
+        [(ngModel)]="someRange"></nouislider>
       <hr>
       <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>
       <hr>
       <hr>
       <app-multiselect [items]="stimuli" (selectedItems)="filterChangeStimuli($event)"></app-multiselect>
       <!--<app-trajview class="offset-3 col-9" *ngIf="chartData" [data]="chartData"></app-trajview>-->
-      <button (click)="showSimMarix()">simMatrix</button>
+      <button class="btn" (click)="showSimMarix()">simMatrix</button>
       <app-sim-matrix [simMatrix]="simMatrix" [labels]="labels"></app-sim-matrix>
     </div>
     <app-trajview1 class="col-sm-9" *ngIf="filteredFixData.length !== 0" [quadLines]="viewAsQuadtree" [nrLines]="nrLines" [data]="filteredFixData"></app-trajview1>
