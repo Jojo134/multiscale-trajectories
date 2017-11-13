@@ -86,7 +86,7 @@ export class MultiMatch {
             vIds[0] = vIds[0].slice(1);
             const score = {
                 shape: this.shape(this.vectors1[vIds[0]], this.vectors2[vIds[1]]) / (2 * diagonal),
-                length: this.length(this.vectors1[vIds[0]], this.vectors2[vIds[1]]) / diagonal,
+                length: this.tLength(this.vectors1[vIds[0]], this.vectors2[vIds[1]]) / diagonal,
                 direction: this.direction(this.vectors1[vIds[0]], this.vectors2[vIds[1]]) / Math.PI,
                 position: this.position(traj1[vIds[0]], this.traj2[vIds[1]]) / diagonal,
                 duration: this.duration(traj1[vIds[0]], this.traj2[vIds[1]]) / maxDuration
@@ -211,7 +211,7 @@ export class MultiMatch {
         return this.vectorLength(this.subtracV(v1, v2));
     }
 
-    length(v1: Vector, v2: Vector) {
+    tLength(v1: Vector, v2: Vector) {
         return this.vectorLength(v1) - this.vectorLength(v2);
     }
 
