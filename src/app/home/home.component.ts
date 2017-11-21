@@ -19,10 +19,11 @@ import * as hamsters from 'hamsters.js';
 export class HomeComponent implements OnInit {
 
   private chartData: Array<any>;
-  nrLines: number;
+  maxDepth = 0;
   minQuadsize = 20;
   simScores;
-  someRange = 5;
+  currentDepth = 0;
+  nrLines: number;
   participants = [];
   stimuli = [];
   viewAsQuadtree: boolean;
@@ -45,6 +46,8 @@ export class HomeComponent implements OnInit {
     this.qTree.insert({ x: 74, y: 74, index: 4 });
     this.qTree.insert({ x: 73, y: 74, index: 5 });
     this.qTree.insert({ x: 74, y: 74, index: 6 });
+    console.log(this.qTree);
+    console.log(this.qTree.getDepth());
     // console.log(this.qTree.insert({ x: 120, y: 120, index: }));
 
     // console.log(this.qTree);
@@ -60,31 +63,44 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!this.dataService.dataLoaded) {
-      this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName);
-    }
+    this.dataService.getDataLoaded()
+      .then(() => this.fillVars())
+      .catch(() =>
+        this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName))
+      .then(() => this.fillVars());
+
+  }
+
+  fillVars() {
     this.selected_stimuli = this.selectionService.getSelectedSimuli();
     this.selected_participants = this.selectionService.getSelectedParticipants();
-    this.participants = this.dataService.getParticioants();
+    this.participants = this.dataService.getParticipants();
     this.stimuli = this.dataService.getStimuli();
-    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.currentDepth });
+    this.maxDepth = this.dataService.getMaxDepth();
+    console.log(this.maxDepth);
   }
 
   filterChangeParticipant(selected: any[]) {
     console.log(selected);
     this.selected_participants = selected;
     this.selectionService.setSelectedParticipants(selected);
-    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
+    console.log('depth', this.currentDepth);
+    console.log('nr lines', this.nrLines);
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.currentDepth });
   }
 
   filterChangeStimuli(selected: any[]) {
     console.log(selected);
     this.selected_stimuli = selected;
     this.selectionService.setSelectedStimuli(selected);
-    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
+    console.log('nr lines', this.nrLines);
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.currentDepth });
   }
   filterData() {
-    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
+    this.nrLines = Math.pow(2, this.currentDepth);
+    console.log('nr lines', this.nrLines);
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.currentDepth });
   }
   generateTree() {
     this.dataService.generateTree(this.minQuadsize);

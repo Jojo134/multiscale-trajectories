@@ -27,19 +27,20 @@ export class CompareComponent implements OnInit {
 
   filteredFixData: Array<TrajectoryViewType> = [];
 
-  qTree: QTree;
   simMatrix: number[][];
   constructor(public ngProgress: NgProgress, private selectionService: SelectionService, private dataService: DataService) { }
 
   ngOnInit() {
-    if (!this.dataService.dataLoaded) {
-      console.log('load data');
-      this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName);
-    }
+    this.dataService.getDataLoaded()
+      .then(() => this.fillVars())
+      .catch(() =>
+        this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName))
+      .then(() => this.fillVars());
+  }
+  fillVars() {
     this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
     this.visibleData = this.filteredFixData;
   }
-
   onChange1(v) {
     console.log(v);
     this.selected_stimuli1 = v;

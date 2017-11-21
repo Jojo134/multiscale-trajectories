@@ -4,10 +4,12 @@
     <div class="col-sm-6">
       <div class="row">
         <label for="minSize">minimum quad size</label>
-        <input readonly [value]="minQuadsize" id="minSize" type="number">
+        <input class="col-6" [(ngModel)]="minQuadsize" name="minSize" id="minSize" type="number">
+        <button class="btn col-6" (click)="generateTree()">Gen Tree</button>
       </div>
-      <md-checkbox [(ngModel)]="viewAsQuadtree">View as Quadtree</md-checkbox>
-      <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="1" [max]="8" [(ngModel)]="someRange"></nouislider>
+      <md-checkbox [(ngModel)]="viewAsQuadtree" (ngModelChange)="filterData()">View as Quadtree</md-checkbox>
+      <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="0" [max]="maxDepth" [(ngModel)]="someRange"
+        (ngModelChange)="filterData()"></nouislider>
       <hr>
       <div class="row">
         <app-multiselect class="col-6" [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>

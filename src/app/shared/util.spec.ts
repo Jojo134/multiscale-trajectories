@@ -4,12 +4,12 @@ import { MultiMatch, center_of_masst, testTraj1, testTraj2, calcdiag } from './u
 import { PointType } from '../data-structures';
 fdescribe('utils test', () => {
     let mm: MultiMatch;
-    fit('mm test', () => {
+    it('mm test', () => {
         mm = new MultiMatch();
         // console.log(mm.computeAngle({ x: 220, y: -142 }, { x: 220, y: -142 }));
         console.log(mm.compare(testTraj1, testTraj2, calcdiag(1651, 1200)));
     });
-    fit('mm test equal', () => {
+    it('mm test equal', () => {
         mm = new MultiMatch();
         // console.log(mm.computeAngle({ x: 220, y: -142 }, { x: 220, y: -142 }));
         console.log(mm.compare(testTraj1, testTraj1, calcdiag(1651, 1200)));

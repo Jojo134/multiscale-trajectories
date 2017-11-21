@@ -12,7 +12,7 @@ import * as ml from 'machine_learning';
 })
 export class ClusterComponent implements OnInit {
   visibleData: Array<TrajectoryViewType> = [];
-  someRange = 3;
+  someRange = 0;
   cluster_list;
   clusteredData = [];
   idList;
@@ -21,6 +21,7 @@ export class ClusterComponent implements OnInit {
   epochs = 100;
   private chartData: Array<any>;
   nrLines: number;
+  maxDepth = 1;
   minQuadsize = 20;
   simScores;
   participants = [];
@@ -33,18 +34,25 @@ export class ClusterComponent implements OnInit {
   qTree: QTree;
   simMatrix: number[][];
   constructor(public ngProgress: NgProgress, private selectionService: SelectionService, private dataService: DataService) {
+
   }
 
   ngOnInit() {
-    if (!this.dataService.dataLoaded) {
-      this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName);
-    }
+    this.dataService.getDataLoaded()
+      .then(() => this.fillVars())
+      .catch(() =>
+        this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName))
+      .then(() => this.fillVars());
+  }
+
+  fillVars() {
     this.selected_stimuli = this.selectionService.getSelectedSimuli();
     this.selected_participants = this.selectionService.getSelectedParticipants();
-    this.participants = this.dataService.getParticioants();
+    this.participants = this.dataService.getParticipants();
     this.stimuli = this.dataService.getStimuli();
     this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
     this.visibleData = this.filteredFixData;
+    this.maxDepth = this.dataService.getMaxDepth();
   }
 
   filterChangeParticipant(selected: any[]) {

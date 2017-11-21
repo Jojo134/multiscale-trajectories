@@ -3,7 +3,7 @@ import { Trajectory, TrajectoryViewType, QTree, AABB } from '../../data-structur
 import { stringToColor } from '../util';
 import { SelectionService } from './selection.service';
 import * as d3 from 'd3';
-
+import { Observable } from 'rxjs/Rx';
 @Injectable()
 export class DataService {
   resolutions: Array<{ city: string, height: number, width: number }> = [];
@@ -15,6 +15,9 @@ export class DataService {
   filename = 'assets/small_fix_data_cleaned.csv';
   dataLoaded = false;
   constructor(private selectionSerivce: SelectionService) { }
+  getDataLoaded() {
+    return this.dataLoaded ? Promise.resolve() : Promise.reject('data not loaded');
+  }
   getAllTrajectories() {
     if (!this.dataLoaded) {
       this.loadData(this.filename, this.resolutionName);
@@ -22,7 +25,7 @@ export class DataService {
     console.log(this.fix_data);
     return this.fix_data;
   }
-  getParticioants() {
+  getParticipants() {
     if (!this.dataLoaded) {
       this.loadData(this.filename, this.resolutionName);
     }
@@ -33,6 +36,15 @@ export class DataService {
       this.loadData(this.filename, this.resolutionName);
     }
     return this.stimuli;
+  }
+  getMaxDepth(): number {
+    return this.dataLoaded ? Math.max(...this.fix_data.map(d => d.qTree.getDepth())) : 1;
+  }
+  getMinQuadSize(): number {
+    return this.dataLoaded ? this.fix_data[0].qTree.minHalfDimension : -1;
+  }
+  getMaxDimension(): { x: number, y: number } {
+    return { x: Math.max(...this.resolutions.map(r => r.width)), y: Math.max(...this.resolutions.map(r => r.height)) };
   }
   filterData(quadConfig: { asQuad: boolean, level?: number }) {
     let filteredFixData = [];
@@ -79,7 +91,7 @@ export class DataService {
   loadData(trajname: string, resname: string) {
     this.loadResolution(resname);
     this.loadTrajectories(trajname);
-    this.dataLoaded = true;
+    return Promise.resolve();
   }
   loadTrajectories(filename: string) {
     d3.tsv(filename, (err, data) => {
@@ -117,6 +129,7 @@ export class DataService {
         });
       });
       this.dataLoaded = true;
+      return Promise.resolve();
       //  console.log(this.fix_data);
     });
   }
