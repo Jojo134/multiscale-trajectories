@@ -89,8 +89,10 @@ export class DataService {
   }
 
   loadData(trajname: string, resname: string) {
-    this.loadResolution(resname);
-    this.loadTrajectories(trajname);
+    if (!this.dataLoaded) {
+      this.loadResolution(resname);
+      this.loadTrajectories(trajname);
+    }
     return Promise.resolve();
   }
   loadTrajectories(filename: string) {

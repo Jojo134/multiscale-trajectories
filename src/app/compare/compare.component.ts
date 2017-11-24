@@ -14,7 +14,7 @@ export class CompareComponent implements OnInit {
   someRange = 3;
   private chartData1: Array<any> = [];
   private chartData2: Array<any> = [];
-  cutPoints: [number, number];
+  cutPoints = [0, 0];
   nrLines: number;
   minQuadsize = 20;
   simScores;

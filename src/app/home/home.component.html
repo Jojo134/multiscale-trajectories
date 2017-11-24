@@ -8,7 +8,7 @@
         <button class="btn col-6" (click)="generateTree()">Gen Tree</button>
       </div>
       <md-checkbox [(ngModel)]="viewAsQuadtree" (ngModelChange)="filterData()">View as Quadtree</md-checkbox>{{nrLines}}
-      <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="0" [max]="maxDepth+1" [(ngModel)]="currentDepth"
+      <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="0" [max]="maxDepth?maxDepth:1" [(ngModel)]="currentDepth"
         (ngModelChange)="filterData()"></nouislider>
       <hr>
       <app-multiselect [items]="participants" (selectedItems)="filterChangeParticipant($event)"></app-multiselect>

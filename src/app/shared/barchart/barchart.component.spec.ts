@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BarChartComponent } from './trajview.component';
+import { BarChartComponent } from './barchart.component';
 
 describe('TrajviewComponent', () => {
   let component: BarChartComponent;

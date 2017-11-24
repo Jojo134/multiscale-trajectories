@@ -39,20 +39,6 @@ export class HomeComponent implements OnInit {
   simMatrix: number[][];
   constructor(public http: Http, public ngProgress: NgProgress,
     private dataService: DataService, private selectionService: SelectionService, private webWorkerService: WebWorkerService) {
-    const boundary = new AABB({ x: 50, y: 50 }, 50);
-    this.qTree = new QTree(new AABB({ x: 50, y: 50 }, 50), 20);
-
-    this.qTree.insert({ x: 24, y: 24, index: 0 });
-    this.qTree.insert({ x: 74, y: 74, index: 4 });
-    this.qTree.insert({ x: 73, y: 74, index: 5 });
-    this.qTree.insert({ x: 74, y: 74, index: 6 });
-    console.log(this.qTree);
-    console.log(this.qTree.getDepth());
-    // console.log(this.qTree.insert({ x: 120, y: 120, index: }));
-
-    // console.log(this.qTree);
-    // console.log(this.qTree.queryRange(boundary));
-    // console.log('ragnequery traj', this.qTree.queryRangeTrajectory(boundary));
   }
 
   showSimMarix() {
