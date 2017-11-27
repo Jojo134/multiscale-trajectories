@@ -26,7 +26,11 @@ export let stringToColor = (function () {
     };
 })();
 export function center_of_masst(points: PointType[]): PointType {
-    if (!points.includes(undefined)) {
+    points = points.filter(Boolean);
+    if (points.length > 0) {
+        if (points.length === 1) {
+            return points[0];
+        }
         const summedPoints = points.reduce((sum, point) => {
             return {
                 x: sum.x + point.x, y: sum.y + point.y, duration: sum.duration + point.duration,
@@ -38,8 +42,6 @@ export function center_of_masst(points: PointType[]): PointType {
             y: summedPoints.y / points.length, duration: summedPoints.duration,
             index: summedPoints.index, timestamp: summedPoints.timestamp
         };
-    } else {
-        return null;
     }
 }
 

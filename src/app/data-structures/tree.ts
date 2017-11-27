@@ -15,8 +15,8 @@ export class QTree {
     // Children
     northWest: QTree;
     northEast: QTree;
-    southWest: QTree;
     southEast: QTree;
+    southWest: QTree;
 
     // Methods
     constructor(boundary: AABB, minHalfDimension: number, currentLevel?: number) {
@@ -33,7 +33,9 @@ export class QTree {
     getPoints(): PointType[] {
         return this.queryRangeTrajectory(this.boundary).map(e => e.sort((a, b) => a.timestamp - b.timestamp)).map(center_of_masst);
     }
-
+    getCleanPointsForLevel(level: number) {
+        return this.getPointsForLevel(level).filter(Boolean);
+    }
     getPointsForLevel(level: number): PointType[] {
         if (this.currentLevel < level) {
             if (!this.northWest) {
@@ -44,17 +46,17 @@ export class QTree {
                 this.southEast.getPointsForLevel(level),
                 this.southWest.getPointsForLevel(level)));
         } else {
-            return [].concat(this.getPoints());
+            const res = [].concat(this.getPoints());
+            return res.filter(Boolean);
         }
     }
-
     insert(p: PointType) {
         // Ignore objects that do not belong in this quad tree
         if (!this.boundary.containsPoint(p)) {
             return false; // object cannot be added
         }
         // check for depth?
-        if (this.boundary.halfDimension < this.minHalfDimension) {
+        if (this.boundary.halfDimension / 2 < this.minHalfDimension) {
             this.points.push(p);
             return true;
         }
@@ -65,8 +67,8 @@ export class QTree {
 
         if (this.northWest.insert(p)) { return true; }
         if (this.northEast.insert(p)) { return true; }
-        if (this.southWest.insert(p)) { return true; }
         if (this.southEast.insert(p)) { return true; }
+        if (this.southWest.insert(p)) { return true; }
 
         // Otherwise, the point cannot be inserted for some unknown reason (this should never happen)
         return false;
@@ -115,12 +117,11 @@ export class QTree {
         return foundSub;
     }
 
-    queryRange(range: AABB): Array<PointType> {
+    queryRange(range: AABB, origin?): Array<PointType> {
         // Prepare an array of results
         let pointsInRange: Array<PointType> = [];
-
         // Automatically abort if the range does not intersect this quad
-        if (!this.boundary.intersectsAABB(range)) {
+        if (!this.boundary.intersectRect(range)) {
             return pointsInRange; // empty list
         }
         // Check objects at this quad level
@@ -129,18 +130,19 @@ export class QTree {
                 pointsInRange.push(this.points[p]);
             }
         }
-
+        // console.log(pointsInRange);
         // Terminate here, if there are no children
-        if (this.northWest == null) {
+        if (!this.northWest) {
             return pointsInRange;
         }
 
         // Otherwise, add the points from the children
         // could be combined
-        pointsInRange = pointsInRange.concat(this.northWest.queryRange(range));
-        pointsInRange = pointsInRange.concat(this.northEast.queryRange(range));
-        pointsInRange = pointsInRange.concat(this.southWest.queryRange(range));
-        pointsInRange = pointsInRange.concat(this.southEast.queryRange(range));
+        pointsInRange = [];
+        pointsInRange.push(...this.northWest.queryRange(range, 'nw'),
+            ...this.northEast.queryRange(range, 'ne'),
+            ...this.southEast.queryRange(range, 'se'),
+            ...this.southWest.queryRange(range, 'sw'));
         return pointsInRange;
     }
 }
@@ -162,23 +164,23 @@ export class AABB {
     }
     private inXRange(point: PointType) {
         if ((this.center.x + this.halfDimension) > point.x
-            && (this.center.x - this.halfDimension) < point.x) {
+            && (this.center.x - this.halfDimension) <= point.x) {
             return true;
         }
         return false;
     }
     private inYRange(point: PointType) {
         if ((this.center.y + this.halfDimension) > point.y
-            && (this.center.y - this.halfDimension) < point.y) {
+            && (this.center.y - this.halfDimension) <= point.y) {
             return true;
         }
         return false;
     }
-    intersectsAABB(other: AABB) {
-        return Math.max(this.center.x - this.halfDimension, other.center.x - other.halfDimension)
-            < Math.min(this.center.x + this.halfDimension, other.center.x + other.halfDimension)
-            && Math.max(this.center.y - this.halfDimension, other.center.y - other.halfDimension)
-            < Math.min(this.center.x + this.halfDimension, other.center.y + other.halfDimension);
 
+    intersectRect(other: AABB) {
+        return (this.center.x - this.halfDimension <= other.center.x + other.halfDimension &&
+            other.center.x - other.halfDimension <= this.center.x + this.halfDimension &&
+            this.center.y - this.halfDimension <= other.center.y + other.halfDimension &&
+            other.center.y - other.halfDimension <= this.center.y + this.halfDimension);
     }
 }
