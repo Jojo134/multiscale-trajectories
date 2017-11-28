@@ -155,7 +155,7 @@ export class ClusterComponent implements OnInit {
           s1: this.filteredFixData[i].stimulus,
           p2: this.filteredFixData[k].participant,
           s2: this.filteredFixData[k].stimulus,
-          scores: mm.compare(this.filteredFixData[i].points, this.filteredFixData[k].points, calcdiag(1651, 1200)),
+          scores: mm.compare(this.filteredFixData[i].points, this.filteredFixData[k].points, calcdiag(2000, 2000)),
           cluster: 'none'
         };
         this.ngProgress.set((i * k) / ((this.filteredFixData.length * this.filteredFixData.length) / 2));
