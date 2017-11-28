@@ -20,7 +20,8 @@ import { HistogramSliderComponent } from './shared/histogram-slider/histogram-sl
 import { SimMatrixComponent } from './shared/sim-matrix/sim-matrix.component';
 import { DataService, SelectionService } from './shared';
 import { CompareComponent } from './compare/compare.component';
-
+;
+import { DataResolver } from './shared/services/data.resolver';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +38,7 @@ import { CompareComponent } from './compare/compare.component';
     BrowserModule, NouisliderModule, MdCheckboxModule, BrowserAnimationsModule,
     FormsModule, HttpModule, routing, NgProgressModule
   ],
-  providers: [appRoutingProviders, DataService, SelectionService, WebWorkerService],
+  providers: [appRoutingProviders, DataService, SelectionService, WebWorkerService, DataResolver],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

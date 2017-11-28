@@ -14,26 +14,27 @@ export class DataService {
   filenameall = 'assets/all_fixation_data_cleaned_up.csv';
   filename = 'assets/small_fix_data_cleaned.csv';
   dataLoaded = false;
+  dataDims = { height: 2000, width: 2000 };
   constructor(private selectionSerivce: SelectionService) { }
   getDataLoaded() {
     return this.dataLoaded ? Promise.resolve() : Promise.reject('data not loaded');
   }
   getAllTrajectories() {
     if (!this.dataLoaded) {
-      this.loadData(this.filename, this.resolutionName);
+      //this.loadData(this.filename, this.resolutionName);
     }
     console.log(this.fix_data);
     return this.fix_data;
   }
   getParticipants() {
     if (!this.dataLoaded) {
-      this.loadData(this.filename, this.resolutionName);
+      //this.loadData(this.filename, this.resolutionName);
     }
     return this.participants;
   }
   getStimuli() {
     if (!this.dataLoaded) {
-      this.loadData(this.filename, this.resolutionName);
+      //this.loadData(this.filename, this.resolutionName);
     }
     return this.stimuli;
   }
@@ -48,23 +49,33 @@ export class DataService {
   }
   filterData(quadConfig: { asQuad: boolean, level?: number }) {
     let filteredFixData = [];
-    const prefilteredFixData = this.fix_data.filter(traj => {
-      return this.selectionSerivce.getSelectedParticipants().filter(e => e.name === traj.participant).length > 0
-        || this.selectionSerivce.getSelectedSimuli().filter(e => e.name === traj.stimulus).length > 0;
-    });
+    let prefilteredFixData = [];
+    if (this.selectionSerivce.getSelectedSimuli().length > 0) {
+      prefilteredFixData = this.fix_data.filter(traj => {
+        return this.selectionSerivce.getSelectedSimuli().filter(e => e.name === traj.stimulus).length > 0;
+      });
+    }
+    if (this.selectionSerivce.getSelectedParticipants().length > 0) {
+      prefilteredFixData = prefilteredFixData.length > 0 ? prefilteredFixData.filter(traj => {
+        return this.selectionSerivce.getSelectedParticipants().filter(e => e.name === traj.participant).length > 0;
+      }) : this.fix_data.filter(traj => {
+        return this.selectionSerivce.getSelectedParticipants().filter(e => e.name === traj.participant).length > 0;
+      });
+    }
     if (quadConfig.asQuad) {
       console.log('going quad');
       filteredFixData = prefilteredFixData.map(traj => {
         return {
           stimulus: traj.stimulus, participant: traj.participant, color: traj.color,
-          points: traj.qTree.getPointsForLevel(quadConfig.level).filter(n => n).sort((a, b) => a.timestamp - b.timestamp)
+          points: traj.qTree.getCleanPointsForLevel(quadConfig.level).filter(n => n).sort((a, b) => a.timestamp - b.timestamp)
         };
       });
     } else {
       filteredFixData = prefilteredFixData;
     }
     console.log(filteredFixData);
-    return this.removeOutliers(filteredFixData);
+    //return this.removeOutliers(filteredFixData);
+    return filteredFixData;
   }
   removeOutliers(data) {
     const filteredFixData = data.filter(traj => {
@@ -82,7 +93,7 @@ export class DataService {
     this.fix_data = this.fix_data.map(d => {
       const resolutionname = this.stimulNameToResName(d.stimulus);
       const currentres = this.retrieveDimension(resolutionname);
-      d.genQtree(currentres[0].height, currentres[0].width, minQuadsize);
+      d.genQtree(this.dataDims.height, this.dataDims.width, minQuadsize);
       return d;
     });
     console.log(this.fix_data);
@@ -105,27 +116,32 @@ export class DataService {
       users.forEach(user => {
         StimuliName.forEach(stimu => {
 
+          const resolutionname = this.stimulNameToResName(stimu);
+          const currentres = this.retrieveDimension(resolutionname);
           const result = data.filter(d => {
-            return d.StimuliName === stimu && d.user === user;
+            return d.StimuliName === stimu && d.user === user
+              && +d.MappedFixationPointX > 0 && +d.MappedFixationPointX < currentres[0].width
+              && +d.MappedFixationPointY > 0 && +d.MappedFixationPointY < currentres[0].height;
           });
           if (result.length) {
-            const resolutionname = this.stimulNameToResName(stimu);
-            const currentres = this.retrieveDimension(resolutionname);
+            //result = result.filter(p => +p.MappedFixationPointX > 0 && +p.MappedFixationPointX < currentres[0].width
+            // && +p.MappedFixationPointY > 0 && +p.MappedFixationPointY < currentres[0].height);
+
             const nTrajectory = new Trajectory();
             nTrajectory.participant = user;
             nTrajectory.stimulus = stimu;
             nTrajectory.color = stringToColor.next(user);
             nTrajectory.points = result.map(d => {
               return {
-                x: +d.MappedFixationPointX,
-                y: +d.MappedFixationPointY,
+                x: ((+d.MappedFixationPointX) / currentres[0].width) * this.dataDims.width,
+                y: ((+d.MappedFixationPointY) / currentres[0].height) * this.dataDims.height,
                 duration: +d.FixationDuration,
                 timestamp: +d.Timestamp,
                 index: +d.FixationIndex
               };
             });
             nTrajectory.points = nTrajectory.points.sort((a, b) => a.timestamp - b.timestamp);
-            nTrajectory.genQtree(currentres[0].height, currentres[0].width, 20);
+            nTrajectory.genQtree(this.dataDims.height, this.dataDims.width, 20);
             this.fix_data.push(nTrajectory);
           }
         });

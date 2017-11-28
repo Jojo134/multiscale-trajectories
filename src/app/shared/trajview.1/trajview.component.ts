@@ -57,8 +57,8 @@ export class Trajview1Component implements OnInit, OnChanges {
     // this.width = element.offsetWidth - this.margin.left - this.margin.right;
     // this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
 
-    this.width = 1650;
-    this.height = 1650;
+    this.width = 2000;
+    this.height = 2000;
 
     // set the ranges
     this.xScale = d3.scaleLinear().range([0, this.width]);
@@ -82,7 +82,7 @@ export class Trajview1Component implements OnInit, OnChanges {
     this.svg = this.chart
       .attr('class', 'svg-element')
       .attr('preserveAspectRatio', 'xMinYMin meet')
-      .attr('viewBox', '0 0 1700 1300')
+      .attr('viewBox', '0 0 2000 2000')
       // .attr('class', 'svg-content-responsive')
       // .attr('width', 1700)
       // .attr('height', 1300)
@@ -116,7 +116,7 @@ export class Trajview1Component implements OnInit, OnChanges {
     return genData;
   }
   updateChart() {
-    console.log(this.calcGridPos());
+    console.log(this.data);
     const update = this.svg.selectAll('.trajectory').data(this.data);
 
     update.exit().transition().attr('stroke-width', 0).remove();
@@ -141,7 +141,6 @@ export class Trajview1Component implements OnInit, OnChanges {
       this.chart.append('g')
         .attr('class', 'grid y-grid')
         .call(this.make_y_axis().tickSize(-this.width));
-
     }
     this.drawPoints();
   }

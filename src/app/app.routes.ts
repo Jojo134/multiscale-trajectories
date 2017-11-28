@@ -3,11 +3,12 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { ClusterComponent } from './cluster/cluster.component';
 import { CompareComponent } from './compare/compare.component';
+import { DataResolver } from './shared/services/data.resolver';
 const appRoutes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomeComponent, resolve: { DataResolver } },
 
-  { path: 'cluster', component: ClusterComponent },
-  { path: 'compare', component: CompareComponent },
+  { path: 'cluster', component: ClusterComponent, resolve: { DataResolver } },
+  { path: 'compare', component: CompareComponent, resolve: { DataResolver } },
   { path: '**', redirectTo: '' }
 ];
 
