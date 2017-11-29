@@ -7,7 +7,7 @@
         <input class="col-6" [(ngModel)]="minQuadsize" name="minSize" id="minSize" type="number">
         <button class="btn col-6" (click)="generateTree()">Gen Tree</button>
       </div>
-      <md-checkbox [(ngModel)]="viewAsQuadtree" (ngModelChange)="filterData()">View as Quadtree</md-checkbox>{{nrLines}}
+      <md-checkbox [(ngModel)]="viewAsQuadtree" (ngModelChange)="filterData()">View as Quadtree</md-checkbox>
       <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="0" [max]="maxDepth?maxDepth:1" [(ngModel)]="currentDepth"
         (ngModelChange)="filterData()"></nouislider>
       <hr>
