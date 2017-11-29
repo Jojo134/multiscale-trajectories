@@ -50,16 +50,18 @@ export class DataService {
   filterData(quadConfig: { asQuad: boolean, level?: number }) {
     let filteredFixData = [];
     let prefilteredFixData = [];
-    if (this.selectionSerivce.getSelectedSimuli().length > 0) {
+    if (this.selectionSerivce.getSelectedSimuli().length > 0 && this.selectionSerivce.getSelectedParticipants().length > 0) {
       prefilteredFixData = this.fix_data.filter(traj => {
-        return this.selectionSerivce.getSelectedSimuli().filter(e => e.name === traj.stimulus).length > 0;
+        return this.selectionSerivce.getSelectedSimuli().map(s => s.name).includes(traj.stimulus)
+          && this.selectionSerivce.getSelectedParticipants().map(p => p.name).includes(traj.participant);
       });
-    }
-    if (this.selectionSerivce.getSelectedParticipants().length > 0) {
-      prefilteredFixData = prefilteredFixData.length > 0 ? prefilteredFixData.filter(traj => {
-        return this.selectionSerivce.getSelectedParticipants().filter(e => e.name === traj.participant).length > 0;
-      }) : this.fix_data.filter(traj => {
-        return this.selectionSerivce.getSelectedParticipants().filter(e => e.name === traj.participant).length > 0;
+    } else if (this.selectionSerivce.getSelectedSimuli().length > 0) {
+      prefilteredFixData = this.fix_data.filter(traj => {
+        return this.selectionSerivce.getSelectedSimuli().map(s => s.name).includes(traj.stimulus);
+      });
+    } else if (this.selectionSerivce.getSelectedParticipants().length > 0) {
+      prefilteredFixData = this.fix_data.filter(traj => {
+        return this.selectionSerivce.getSelectedParticipants().map(p => p.name).includes(traj.participant);
       });
     }
     if (quadConfig.asQuad) {
