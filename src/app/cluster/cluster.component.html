@@ -8,7 +8,7 @@
         <button class="btn col-6" (click)="generateTree()">Gen Tree</button>
       </div>
       <md-checkbox [(ngModel)]="viewAsQuadtree" (ngModelChange)="filterData()">View as Quadtree</md-checkbox>
-      <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="0" [max]="maxDepth" [(ngModel)]="someRange"
+      <nouislider class="slider-style" [tooltips]="true" [step]="1" [connect]="true" [min]="0" [max]="maxDepth?maxDepth:1" [(ngModel)]="currentDepth"
         (ngModelChange)="filterData()"></nouislider>
       <hr>
       <div class="row">

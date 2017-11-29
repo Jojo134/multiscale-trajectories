@@ -12,7 +12,7 @@ import * as ml from 'machine_learning';
 })
 export class ClusterComponent implements OnInit {
   visibleData: Array<TrajectoryViewType> = [];
-  someRange = 0;
+  currentDepth = 0;
   cluster_list;
   clusteredData = [];
   idList;
@@ -44,13 +44,17 @@ export class ClusterComponent implements OnInit {
         this.dataService.loadData(this.dataService.filename, this.dataService.resolutionName))
       .then(() => this.fillVars());
   }
-
+  filterData() {
+    this.nrLines = Math.pow(2, this.currentDepth);
+    console.log('nr lines', this.nrLines);
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.currentDepth });
+  }
   fillVars() {
     this.selected_stimuli = this.selectionService.getSelectedSimuli();
     this.selected_participants = this.selectionService.getSelectedParticipants();
     this.participants = this.dataService.getParticipants();
     this.stimuli = this.dataService.getStimuli();
-    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.currentDepth });
     this.visibleData = this.filteredFixData;
     this.maxDepth = this.dataService.getMaxDepth();
   }
@@ -59,7 +63,7 @@ export class ClusterComponent implements OnInit {
     console.log(selected);
     this.selected_participants = selected;
     this.selectionService.setSelectedParticipants(selected);
-    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.currentDepth });
     this.visibleData = this.filteredFixData;
   }
 
@@ -67,7 +71,7 @@ export class ClusterComponent implements OnInit {
     console.log(selected);
     this.selected_stimuli = selected;
     this.selectionService.setSelectedStimuli(selected);
-    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.someRange });
+    this.filteredFixData = this.dataService.filterData({ asQuad: this.viewAsQuadtree, level: this.currentDepth });
     this.visibleData = this.filteredFixData;
   }
 

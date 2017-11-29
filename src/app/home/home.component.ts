@@ -41,13 +41,6 @@ export class HomeComponent implements OnInit {
     private dataService: DataService, private selectionService: SelectionService, private webWorkerService: WebWorkerService) {
   }
 
-  showSimMarix() {
-    const mm = new MultiMatch();
-    const trs = this.fix_data.filter(t => t.stimulus === '01_Antwerpen_S1.jpg').map(t => t.points);
-    mm.compare(trs[0], trs[1], calcdiag(1651, 1200));
-    this.simMatrix = mm.simMatrix;
-  }
-
   ngOnInit() {
     this.dataService.getDataLoaded()
       .then(() => this.fillVars())
