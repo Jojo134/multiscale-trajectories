@@ -79,10 +79,13 @@ export class ClusterComponent implements OnInit {
     console.log(selected);
     this.clustered_stimuli = [];
     this.visibleData = [];
+    let tempSet = new Set();
     selected.forEach(e => {
-      this.clustered_stimuli.push(...this.clusteredData.filter(c => e.name === c.cluster));
+      tempSet = new Set([...Array.from(tempSet), ...this.clusteredData.filter(c => e.name === c.cluster)]);
+      // this.clustered_stimuli.push(...this.clusteredData.filter(c => e.name === c.cluster));
       this.visibleData.push(...this.clusteredData.filter(c => e.name === c.cluster));
     });
+    this.clustered_stimuli = Array.from(tempSet);
   }
 
   filterChangeClusterStimuli(selected: any[]) {

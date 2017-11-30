@@ -9,6 +9,7 @@ export class DataResolver implements Resolve<any> {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): Observable<any> | Promise<any> | any {
-        return this.backend.loadData(this.backend.filenameall, this.backend.resolutionName);
+        this.backend.loadData(this.backend.filenameall, this.backend.resolutionName);
+        this.backend.dataLoaded = true;
     }
 }

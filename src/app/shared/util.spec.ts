@@ -7,7 +7,7 @@ import { PointType, AABB, QTree, Trajectory } from '../data-structures';
 fdescribe('utils test', () => {
     let mm: MultiMatch;
     let qTree: QTree;
-    fit('qtree test level 0', () => {
+    it('qtree test level 0', () => {
         const boundary = new AABB({ x: 8, y: 8 }, 8);
         qTree = new QTree(new AABB({ x: 8, y: 8 }, 8), 1);
         console.log(qTree.insert({ x: 0, y: 0, index: 0, timestamp: 0 }));
@@ -33,7 +33,7 @@ fdescribe('utils test', () => {
         expect(res2[0].x).toBeCloseTo(3.27, 2);
         expect(res2.length).toBe(1);
     });
-    fit('qtree test level 1', () => {
+    it('qtree test level 1', () => {
         const boundary = new AABB({ x: 8, y: 8 }, 8);
         qTree = new QTree(new AABB({ x: 8, y: 8 }, 8), 1);
         console.log(qTree.insert({ x: 0, y: 0, index: 0, timestamp: 0 }));
@@ -63,7 +63,7 @@ fdescribe('utils test', () => {
         expect(res2[0].x).toBeCloseTo(0.5, 2);
         expect(res2.length).toBe(5);
     });
-    fit('qtree test level 2', () => {
+    it('qtree test level 2', () => {
         const boundary = new AABB({ x: 8, y: 8 }, 8);
         qTree = new QTree(new AABB({ x: 8, y: 8 }, 8), 1);
         console.log(qTree.insert({ x: 0, y: 0, index: 0, timestamp: 0 }));
@@ -89,7 +89,7 @@ fdescribe('utils test', () => {
         expect(res2.length).toBe(5);
         console.log(res2)
     });
-    fit('qtree test level 3', () => {
+    it('qtree test level 3', () => {
         const boundary = new AABB({ x: 8, y: 8 }, 8);
         qTree = new QTree(new AABB({ x: 8, y: 8 }, 8), 1);
         console.log(qTree.insert({ x: 0, y: 0, index: 0, timestamp: 0 }));

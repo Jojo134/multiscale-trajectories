@@ -148,7 +148,7 @@ export class DataService {
           }
         });
       });
-      this.dataLoaded = true;
+      //this.dataLoaded = true;
       return Promise.resolve();
       //  console.log(this.fix_data);
     });
