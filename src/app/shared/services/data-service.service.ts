@@ -143,6 +143,13 @@ export class DataService {
               };
             });
             nTrajectory.points = nTrajectory.points.sort((a, b) => a.timestamp - b.timestamp);
+            // align index after removing outliers
+            nTrajectory.points = nTrajectory.points.map((v, i, a) => {
+              if (a[i - 1] && v.index - a[i - 1].index > 1) {
+                v.index = a[i - 1].index + 1;
+              }
+              return v;
+            });
             nTrajectory.genQtree(this.dataDims.height, this.dataDims.width, 20);
             this.fix_data.push(nTrajectory);
           }
