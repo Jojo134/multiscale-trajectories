@@ -17,7 +17,7 @@ export class Trajview1Component implements OnInit, OnChanges {
     .x(function (d) { return d['x']; })
     .y(function (d) { return d['y']; });
 
-  private margin: any = { top: 20, bottom: 20, left: 20, right: 20 };
+  private margin: any = { top: 0, bottom: 0, left: 0, right: 0 };
   private chart: any;
   private width: number;
   private height: number;
@@ -33,7 +33,6 @@ export class Trajview1Component implements OnInit, OnChanges {
     this.createChart();
     if (this.data) {
       this.updateChart();
-      console.log('component', this.data);
     }
   }
 
@@ -54,8 +53,6 @@ export class Trajview1Component implements OnInit, OnChanges {
   createChart() {
     // set the dimensions and margins of the graph
     const element = this.chartContainer.nativeElement;
-    // this.width = element.offsetWidth - this.margin.left - this.margin.right;
-    // this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
 
     this.width = 2000;
     this.height = 2000;
@@ -66,26 +63,10 @@ export class Trajview1Component implements OnInit, OnChanges {
 
     this.chart = d3.select(element).append('svg');
 
-    /*    d3.select(element).select('svg').append('defs').append('marker')
-          .attr('id', 'markerarrow')
-          .attr('viewBox', '-0.5 -0.5 1 1')
-          .append('path')
-          .attr('d', 'M 0,0 m -5,-5 L 5,0 L -5,5 Z')
-          .attr('fill', '#2ca02c');
-        d3.select(element).select('svg').select('defs').append('marker')
-          .attr('id', 'markercircle')
-          .attr('viewbox', '-.6 -.6 1.2 1.2')
-          .append('path')
-          .attr('d', 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0')
-          .attr('fill', '#1f77b4');
-    */
     this.svg = this.chart
       .attr('class', 'svg-element')
       .attr('preserveAspectRatio', 'xMinYMin meet')
       .attr('viewBox', '0 0 2000 2000')
-      // .attr('class', 'svg-content-responsive')
-      // .attr('width', 1700)
-      // .attr('height', 1300)
       .append('g')
       .attr('transform',
       'translate(' + this.margin.left + ',' + this.margin.top + ')');
@@ -100,14 +81,6 @@ export class Trajview1Component implements OnInit, OnChanges {
 
   }
 
-  drawTraj(points, color) {
-    return this.svg.append('path')
-      .attr('class', 'trajectory')
-      .attr('d', this.linefunc1(points))
-      .attr('stroke', color)
-      .attr('stroke-width', 2)
-      .attr('fill', 'none');
-  }
   calcGridPos() {
     const genData = [];
     for (let i = 1; i < this.nrLines; i++) {
@@ -152,9 +125,5 @@ export class Trajview1Component implements OnInit, OnChanges {
       .attr('cx', function (d) { return d['x']; })
       .attr('cy', function (d) { return d['y']; })
       .attr('r', 5);
-  }
-  removeItem() {
-    this.data.pop();
-    this.updateChart();
   }
 }
