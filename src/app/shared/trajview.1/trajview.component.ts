@@ -117,7 +117,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   }
   updateChart() {
     console.log(this.data);
-    const update = this.svg.selectAll('.trajectory').data(this.data);
+    const update = this.svg.selectAll('.trajectory').data(this.data, (d) => d.points);
 
     update.exit().transition().attr('stroke-width', 0).remove();
 
@@ -145,11 +145,11 @@ export class Trajview1Component implements OnInit, OnChanges {
     this.drawPoints();
   }
   drawPoints() {
-    const update = this.svg.selectAll('.dot').data(this.data.map(d => d['points'][0]));
+    const update = this.svg.selectAll('.dot').data(this.data.map(d => d['points'][0]), (d) => d.x);
     update.exit().transition().attr('r', 0).remove();
 
     update.enter().append('circle').attr('class', 'dot')
-      .attr('cx', function (d, i) { return d['x']; })
+      .attr('cx', function (d) { return d['x']; })
       .attr('cy', function (d) { return d['y']; })
       .attr('r', 5);
   }

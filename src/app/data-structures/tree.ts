@@ -117,7 +117,7 @@ export class QTree {
         return foundSub;
     }
 
-    queryRange(range: AABB, origin?): Array<PointType> {
+    queryRange(range: AABB): Array<PointType> {
         // Prepare an array of results
         let pointsInRange: Array<PointType> = [];
         // Automatically abort if the range does not intersect this quad
@@ -139,10 +139,10 @@ export class QTree {
         // Otherwise, add the points from the children
         // could be combined
         pointsInRange = [];
-        pointsInRange.push(...this.northWest.queryRange(range, 'nw'),
-            ...this.northEast.queryRange(range, 'ne'),
-            ...this.southEast.queryRange(range, 'se'),
-            ...this.southWest.queryRange(range, 'sw'));
+        pointsInRange.push(...this.northWest.queryRange(range),
+            ...this.northEast.queryRange(range),
+            ...this.southEast.queryRange(range),
+            ...this.southWest.queryRange(range));
         return pointsInRange;
     }
 }
