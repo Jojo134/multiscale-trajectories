@@ -118,7 +118,7 @@ export class Trajview1Component implements OnInit, OnChanges {
     this.drawPoints();
   }
   drawPoints() {
-    const update = this.svg.selectAll('.dot').data(this.data.map(d => d['points'][0]), (d) => d.x);
+    const update = this.svg.selectAll('.dot').data(this.data.map(d => d['points'][0]), (d) => d.x + d.y);
     update.exit().transition().attr('r', 0).remove();
 
     update.enter().append('circle').attr('class', 'dot')
