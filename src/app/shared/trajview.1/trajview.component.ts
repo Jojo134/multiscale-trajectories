@@ -1,7 +1,8 @@
 import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { Trajectory, TrajectoryViewType } from '../../data-structures';
-
+import * as stringhash from 'string-hash';
+import * as _ from 'lodash';
 @Component({
   selector: 'app-trajview1',
   templateUrl: './trajview.component.html',
@@ -90,7 +91,10 @@ export class Trajview1Component implements OnInit, OnChanges {
   }
   updateChart() {
     console.log(this.data);
-    const update = this.svg.selectAll('.trajectory').data(this.data, (d) => d.points);
+    let dataCopy = _.cloneDeep(this.data);
+    // console.log(this.keyFuncData(this.data[0]));
+    const update = this.svg.selectAll('.trajectory').data(dataCopy,
+      (d) => stringhash(d.points.reduce((total, p) => total + '' + p.x + p.y)));
 
     update.exit().transition().attr('stroke-width', 0).remove();
 
@@ -115,15 +119,19 @@ export class Trajview1Component implements OnInit, OnChanges {
         .attr('class', 'grid y-grid')
         .call(this.make_y_axis().tickSize(-this.width));
     }
+    // summierte dauer anzeigen radius abhängig
+    // radius/ms als eingabe
+    // checkbox
     this.drawPoints();
   }
   drawPoints() {
-    const update = this.svg.selectAll('.dot').data(this.data.map(d => d['points'][0]), (d) => d.x + d.y);
+    const update = this.svg.selectAll('.dot').data(this.data.map(d => d['points'][0]), (d) => '' + d.x + d.y);
     update.exit().transition().attr('r', 0).remove();
 
     update.enter().append('circle').attr('class', 'dot')
       .attr('cx', function (d) { return d['x']; })
       .attr('cy', function (d) { return d['y']; })
+      //
       .attr('r', 5);
   }
 }
