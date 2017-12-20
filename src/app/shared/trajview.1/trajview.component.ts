@@ -14,6 +14,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   @Input() private data: Array<TrajectoryViewType>;
   @Input() private quadLines: boolean;
   @Input() private nrLines: number;
+  @Input() private dwellFactor: number = 0.1;
   linefunc1 = d3.line()
     .x(function (d) { return d['x']; })
     .y(function (d) { return d['y']; });
@@ -28,6 +29,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   private xAxis: any;
   private yAxis: any;
   private svg: any;
+
   constructor() { }
 
   ngOnInit() {
@@ -70,7 +72,7 @@ export class Trajview1Component implements OnInit, OnChanges {
       .attr('viewBox', '0 0 2000 2000')
       .append('g')
       .attr('transform',
-      'translate(' + this.margin.left + ',' + this.margin.top + ')');
+      'translate(' + this.margin.left + ',' + this.margin.top + ')')
     d3.select(element).select('svg').append('g')
       .attr('class', 'grid x-grid')
       .attr('transform', 'translate(0,' + this.height + ')')
@@ -93,6 +95,7 @@ export class Trajview1Component implements OnInit, OnChanges {
     console.log(this.data);
     let dataCopy = _.cloneDeep(this.data);
     // console.log(this.keyFuncData(this.data[0]));
+    this.drawDwellPoints(dataCopy);
     const update = this.svg.selectAll('.trajectory').data(dataCopy,
       (d) => stringhash(d.points.reduce((total, p) => total + '' + p.x + p.y)));
 
@@ -102,7 +105,7 @@ export class Trajview1Component implements OnInit, OnChanges {
       .attr('class', 'trajectory')
       .attr('stroke-width', 0)
       .transition()
-      .attr('stroke-width', 2)
+      .attr('stroke-width', 3)
       .attr('fill', 'none')
       .attr('d', d => this.linefunc1(d.points))
       .attr('stroke', d => d.color)
@@ -122,16 +125,37 @@ export class Trajview1Component implements OnInit, OnChanges {
     // summierte dauer anzeigen radius abhängig
     // radius/ms als eingabe
     // checkbox
-    this.drawPoints();
+    this.drawStartPoints(dataCopy);
   }
-  drawPoints() {
-    const update = this.svg.selectAll('.dot').data(this.data.map(d => d['points'][0]), (d) => '' + d.x + d.y);
+  drawDwellPoints(data) {
+    const update = this.svg.selectAll('.dot').data(_.flatMap(data.map(d => d['points']
+      .map(p => {
+        return {
+          x: p.x,
+          y: p.y,
+          duration: p.duration,
+          color: d.color
+        };
+      }))), (d) => '' + d.x + d.y);
     update.exit().transition().attr('r', 0).remove();
-
     update.enter().append('circle').attr('class', 'dot')
       .attr('cx', function (d) { return d['x']; })
       .attr('cy', function (d) { return d['y']; })
+      .attr('stroke', function (d) { return d['color']; })
+      .attr('stroke-width', 3)
+      //.attr('fill', function (d) { return d['color']; })
+      .attr('fill', 'none')
+      .attr('r', function (d) { console.log(d, this.dwellFactor); return d['duration'] / 10; });
+  }
+
+  drawStartPoints(data) {
+    const update = this.svg.selectAll('.start-dot').data(data.map(d => d['points'][0]), (d) => '' + d.x + d.y);
+    update.exit().transition().attr('r', 0).remove();
+
+    update.enter().append('circle').attr('class', 'start-dot')
+      .attr('cx', function (d) { return d['x']; })
+      .attr('cy', function (d) { return d['y']; })
       //
-      .attr('r', 5);
+      .attr('r', 7);
   }
 }
