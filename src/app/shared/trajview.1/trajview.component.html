@@ -1,1 +1,9 @@
+<div class="row form-inline">
+    <md-checkbox class="" [(ngModel)]="dwellTimes" (ngModelChange)="updateChart()">Dwelltimes </md-checkbox>
+    <div class="form-group">
+        <label>Faktor: </label>
+        <input class="form-control" type="number" step="0.1" [(ngModel)]="dwellFactor" (ngModelChange)="updateChart()">
+    </div>
+    <button class="btn" (click)="exportSVG()">Export SVG</button>
+</div>
 <div class="d3-chart" #chart1></div>

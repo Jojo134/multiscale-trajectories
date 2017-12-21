@@ -44,6 +44,14 @@ export class Trajview1Component implements OnInit, OnChanges {
       this.updateChart();
     }
   }
+  exportSVG() {
+    const el = this.chartContainer.nativeElement;
+    el.children[0].setAttribute('title', 'Export');
+    el.children[0].setAttribute('version', 1.1);
+    el.children[0].setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    const blob = new Blob([el.innerHTML], { type: 'image/svg+xml' });
+    saveAs(blob, 'export.svg');
+  }
   make_x_axis() {
     return d3.axisBottom(this.xScale)
       .tickValues(this.calcGridPos());
