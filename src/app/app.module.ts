@@ -7,6 +7,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgProgressModule } from 'ngx-progressbar';
 import { WebWorkerService } from 'angular2-web-worker';
 
+import { Ng2FileInputModule } from 'ng2-file-input'; // <-- import the module
+
 import { AppComponent } from './app.component';
 import { BarChartComponent } from './shared/barchart/barchart.component';
 import { Trajview1Component } from './shared/trajview.1/trajview.component';
@@ -20,8 +22,9 @@ import { HistogramSliderComponent } from './shared/histogram-slider/histogram-sl
 import { SimMatrixComponent } from './shared/sim-matrix/sim-matrix.component';
 import { DataService, SelectionService } from './shared';
 import { CompareComponent } from './compare/compare.component';
-;
+
 import { DataResolver } from './shared/services/data.resolver';
+import { LoadingComponent } from './loading/loading.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,9 +35,10 @@ import { DataResolver } from './shared/services/data.resolver';
     ClusterComponent,
     HistogramSliderComponent,
     SimMatrixComponent,
-    CompareComponent
+    CompareComponent,
+    LoadingComponent
   ],
-  imports: [
+  imports: [Ng2FileInputModule.forRoot(),
     BrowserModule, NouisliderModule, MdCheckboxModule, BrowserAnimationsModule,
     FormsModule, HttpModule, routing, NgProgressModule
   ],

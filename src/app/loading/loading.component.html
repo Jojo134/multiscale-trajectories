@@ -1,0 +1,7 @@
+<div class="container">
+  <div *ngIf="loading">Please Wait... Redirecting when done</div>
+  <input type="text" [(ngModel)]="trajectoryName">
+  <br>
+  <input type="text" [(ngModel)]="resolutionName">
+  <button class="btn" (click)="loadData()">Submit</button>
+</div>

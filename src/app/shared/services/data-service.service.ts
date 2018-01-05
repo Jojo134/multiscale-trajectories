@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Trajectory, TrajectoryViewType, QTree, AABB } from '../../data-structures';
 import { stringToColor } from '../util';
 import { SelectionService } from './selection.service';
@@ -15,7 +16,7 @@ export class DataService {
   filename = 'assets/small_fix_data_cleaned.csv';
   dataLoaded = false;
   dataDims = { height: 2000, width: 2000 };
-  constructor(private selectionSerivce: SelectionService) { }
+  constructor(private selectionSerivce: SelectionService, private router: Router) { }
   getDataLoaded() {
     return this.dataLoaded ? Promise.resolve() : Promise.reject('data not loaded');
   }
@@ -102,14 +103,11 @@ export class DataService {
   }
 
   loadData(trajname: string, resname: string) {
-    if (!this.dataLoaded) {
-      this.loadResolution(resname);
-      this.loadTrajectories(trajname);
-    }
-    return Promise.resolve();
+    this.loadResolution(resname);
+    this.loadTrajectories(trajname);
   }
   loadTrajectories(filename: string) {
-    d3.tsv(filename, (err, data) => {
+    return d3.tsv(filename, (err, data) => {
       // console.log(data);
       const users = new Set(Array.from(data, o => o.user));
       this.participants = Array.from(users).map((u, index) => ({ name: u, id: index }));
@@ -126,7 +124,7 @@ export class DataService {
               && +d.MappedFixationPointY > 0 && +d.MappedFixationPointY < currentres[0].height;
           });
           if (result.length) {
-            //result = result.filter(p => +p.MappedFixationPointX > 0 && +p.MappedFixationPointX < currentres[0].width
+            // result = result.filter(p => +p.MappedFixationPointX > 0 && +p.MappedFixationPointX < currentres[0].width
             // && +p.MappedFixationPointY > 0 && +p.MappedFixationPointY < currentres[0].height);
 
             const nTrajectory = new Trajectory();
@@ -150,13 +148,15 @@ export class DataService {
               }
               return v;
             });
+            //console.log(result);
+            //console.log(nTrajectory.points);
             nTrajectory.genQtree(this.dataDims.height, this.dataDims.width, 20);
             this.fix_data.push(nTrajectory);
           }
         });
       });
-      //this.dataLoaded = true;
-      return Promise.resolve();
+      this.dataLoaded = true;
+      this.router.navigateByUrl('/');
       //  console.log(this.fix_data);
     });
   }
@@ -165,7 +165,7 @@ export class DataService {
     return stimuSplit.slice(1, stimuSplit.length - 1).join(' ');
   }
   loadResolution(filename) {
-    d3.tsv(filename, (err, data) => {
+    return d3.tsv(filename, (err, data) => {
       data.forEach(d => {
         this.resolutions.push({ city: d.city, height: +d.height, width: +d.width });
       });

@@ -3,7 +3,7 @@
 @import "~font-awesome/css/font-awesome.css";
 @import "~nouislider/distribute/nouislider.min.css";
 @import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
-
+@import "~ng2-file-input/ng2-file-input.css";
 .svg-element{
     border: 2px black solid
 }
