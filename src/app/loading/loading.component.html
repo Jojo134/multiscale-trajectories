@@ -1,7 +1,12 @@
 <div class="container">
+  <br />
+  <h4>Trajectoryfile</h4>
+  <ng2-file-input (onAdded)="onActionTraj($event)" [multiple]="false" [show-previews]="true"></ng2-file-input>
+  <br />
+  <h4>Resolutionfile</h4>
+  <ng2-file-input (onAdded)="onActionRes($event)" [multiple]="false" [show-previews]="true"></ng2-file-input>
+  <br />
+
   <div *ngIf="loading">Please Wait... Redirecting when done</div>
-  <input type="text" [(ngModel)]="trajectoryName">
-  <br>
-  <input type="text" [(ngModel)]="resolutionName">
   <button class="btn" (click)="loadData()">Submit</button>
 </div>
