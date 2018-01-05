@@ -4,13 +4,13 @@
     <div class="col-sm-6">
       <div>
         <label>Trajectory 1</label>
-        <select [ngModel]="selected_stimuli1" (ngModelChange)="onChange1($event)" class="form-control col-12">
+        <select [ngModel]="select1" (ngModelChange)="onChange1($event)" class="form-control col-12">
           <option selected [ngValue]="undefined" *ngIf="filteredFixData.length === 0">Choose data in Cluster/Trajectory View</option>
           <option selected [ngValue]="undefined" *ngIf="filteredFixData.length > 0">-</option>
           <option *ngFor="let s of filteredFixData" [ngValue]="s">{{s.participant + ' ' + s.stimulus}}</option>
         </select>
         <label>Trajectory 2</label>
-        <select [ngModel]="selected_stimuli2" (ngModelChange)="onChange2($event)" class="form-control col-12">
+        <select [ngModel]="select2" (ngModelChange)="onChange2($event)" class="form-control col-12">
           <option selected [ngValue]="undefined" *ngIf="filteredFixData.length === 0">Choose data in Cluster/Trajectory View</option>
           <option selected [ngValue]="undefined" *ngIf="filteredFixData.length > 0">-</option>
           <option *ngFor="let s of filteredFixData" [ngValue]="s">{{s.participant + ' ' + s.stimulus}}</option>

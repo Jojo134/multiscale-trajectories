@@ -97,6 +97,7 @@ export class ClusterComponent implements OnInit {
 
   cluster() {
     this.simScores = this.computeSimScores();
+    // bester score -> traj rauslöschen
     console.log('sim scores done');
     const data = [];
     this.idList = [];
@@ -116,16 +117,17 @@ export class ClusterComponent implements OnInit {
     const result = ml.kmeans.cluster({
       data: data,
       k: this.k,
+      init_using_data: true, // true is default
       epochs: this.epochs,
       distance: { type: 'euclidean' }
     });
     this.ngProgress.done();
     console.log('clusters : ', result.clusters);
     console.log('means : ', result.means);
-    result.clusters.forEach(element => {
+    /*result.clusters.forEach(element => {
       element.forEach(e => console.log(element, this.idList[e]));
     });
-
+    */
     let count = 0;
 
     this.cluster_list = result.clusters.map((v, i) => ({ id: i, name: 'cluster ' + i, values: v }));

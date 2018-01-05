@@ -3,7 +3,7 @@ import { NgProgress } from 'ngx-progressbar';
 
 import { SelectionService, DataService, MultiMatch, calcdiag } from '../shared';
 import { QTree, Trajectory, TrajectoryViewType } from '../data-structures';
-
+import * as _ from 'lodash';
 @Component({
   selector: 'app-compare',
   templateUrl: './compare.component.html',
@@ -24,7 +24,8 @@ export class CompareComponent implements OnInit {
   viewAsQuadtree: boolean;
   selected_stimuli1: Trajectory;
   selected_stimuli2: Trajectory;
-
+  select1: Trajectory;
+  select2: Trajectory;
   filteredFixData: Array<TrajectoryViewType> = [];
 
   simMatrix: number[][];
@@ -43,9 +44,12 @@ export class CompareComponent implements OnInit {
   }
   onChange1(v) {
     console.log(v);
-    this.selected_stimuli1 = v;
+    this.selected_stimuli1 = _.cloneDeep(v);
     this.visibleData = [];
     if (this.selected_stimuli2) {
+      // let newCourse = _.cloneDeep(this.selected_stimuli1);
+      // console.log(newCourse.points.pop());
+      console.log(this.selected_stimuli1);
       this.visibleData = [this.selected_stimuli1, this.selected_stimuli2];
       this.clearStimHist();
       this.stimuli1_hist.push(this.selected_stimuli1);
@@ -56,7 +60,7 @@ export class CompareComponent implements OnInit {
 
   onChange2(v) {
     console.log(v);
-    this.selected_stimuli2 = v;
+    this.selected_stimuli2 = _.cloneDeep(v);
     this.visibleData = [];
     if (this.selected_stimuli1) {
 
@@ -76,11 +80,11 @@ export class CompareComponent implements OnInit {
     this.chartData2 = [];
     for (let i = 0; i < t1.points.length; i++) {
       this.chartData1.push([`${i}`, Object.values(this.mm.compare(t1.points.filter((v, index) => i !== index),
-        t2.points, calcdiag(1651, 1200))).reduce((sum, current) => sum + current) / 5]);
+        t2.points, calcdiag(2000, 2000))).reduce((sum, current) => sum + current) / 5]);
     }
     for (let i = 0; i < t2.points.length; i++) {
       this.chartData2.push([`${i}`, Object.values(this.mm.compare(t2.points.filter((v, index) => i !== index),
-        t1.points, calcdiag(1651, 1200))).reduce((sum, current) => sum + current) / 5]);
+        t1.points, calcdiag(2000, 2000))).reduce((sum, current) => sum + current) / 5]);
     }
   }
 
