@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import { Trajectory, TrajectoryViewType } from '../../data-structures';
 import * as stringhash from 'string-hash';
 import * as _ from 'lodash';
+import { saveAs } from 'file-saver';
 @Component({
   selector: 'app-trajview1',
   templateUrl: './trajview.component.html',
@@ -14,11 +15,11 @@ export class Trajview1Component implements OnInit, OnChanges {
   @Input() private data: Array<TrajectoryViewType>;
   @Input() private quadLines: boolean;
   @Input() private nrLines: number;
-  @Input() private dwellFactor: number = 0.1;
+  @Input() private dwellFactor = 0.1;
   linefunc1 = d3.line()
     .x(function (d) { return d['x']; })
     .y(function (d) { return d['y']; });
-
+  private dwellTimes = false;
   private margin: any = { top: 0, bottom: 0, left: 0, right: 0 };
   private chart: any;
   private width: number;
@@ -40,6 +41,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
+    this.dwellFactor = 0.1;
     if (this.svg) {
       this.updateChart();
     }
@@ -103,7 +105,11 @@ export class Trajview1Component implements OnInit, OnChanges {
     console.log(this.data);
     let dataCopy = _.cloneDeep(this.data);
     // console.log(this.keyFuncData(this.data[0]));
-    this.drawDwellPoints(dataCopy);
+    if (this.dwellTimes) {
+      this.drawDwellPoints(dataCopy);
+    } else {
+      this.svg.selectAll('.dot').remove();
+    }
     const update = this.svg.selectAll('.trajectory').data(dataCopy,
       (d) => stringhash(d.points.reduce((total, p) => total + '' + p.x + p.y)));
 
@@ -142,18 +148,20 @@ export class Trajview1Component implements OnInit, OnChanges {
           x: p.x,
           y: p.y,
           duration: p.duration,
-          color: d.color
+          color: d.color,
+          factor: this.dwellFactor
         };
-      }))), (d) => '' + d.x + d.y);
+      }))), (d) => '' + d.x + d.y + d.factor);
+    console.log(this.dwellFactor);
     update.exit().transition().attr('r', 0).remove();
     update.enter().append('circle').attr('class', 'dot')
       .attr('cx', function (d) { return d['x']; })
       .attr('cy', function (d) { return d['y']; })
       .attr('stroke', function (d) { return d['color']; })
       .attr('stroke-width', 3)
-      //.attr('fill', function (d) { return d['color']; })
+      // .attr('fill', function (d) { return d['color']; })
       .attr('fill', 'none')
-      .attr('r', function (d) { console.log(d, this.dwellFactor); return d['duration'] / 10; });
+      .attr('r', function (d) { console.log(d, this.dwellFactor); return d['duration'] * d['factor']; });
   }
 
   drawStartPoints(data) {
