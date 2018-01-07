@@ -5,7 +5,6 @@ import { HttpModule } from '@angular/http';
 import { MdButtonModule, MdCheckboxModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgProgressModule } from 'ngx-progressbar';
-import { WebWorkerService } from 'angular2-web-worker';
 
 import { Ng2FileInputModule } from 'ng2-file-input'; // <-- import the module
 
@@ -42,7 +41,7 @@ import { LoadingComponent } from './loading/loading.component';
     BrowserModule, NouisliderModule, MdCheckboxModule, BrowserAnimationsModule,
     FormsModule, HttpModule, routing, NgProgressModule
   ],
-  providers: [appRoutingProviders, DataService, SelectionService, WebWorkerService, DataResolver],
+  providers: [appRoutingProviders, DataService, SelectionService, DataResolver],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

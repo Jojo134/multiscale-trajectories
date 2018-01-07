@@ -2,14 +2,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Http } from '@angular/http';
 import { NgProgress } from 'ngx-progressbar';
-import { WebWorkerService } from 'angular2-web-worker';
 import 'rxjs/Rx';
 import { Observable } from 'rxjs/Observable';
 import * as d3 from 'd3';
 import { Trajectory, TrajectoryViewType, QTree, AABB } from '../data-structures';
 import { MultiMatch, calcdiag, stringToColor, DataService, SelectionService } from '../shared';
-
-import * as hamsters from 'hamsters.js';
 
 @Component({
   selector: 'app-home',
@@ -38,7 +35,7 @@ export class HomeComponent implements OnInit {
   qTree: QTree;
   simMatrix: number[][];
   constructor(public http: Http, public ngProgress: NgProgress,
-    private dataService: DataService, private selectionService: SelectionService, private webWorkerService: WebWorkerService) {
+    private dataService: DataService, private selectionService: SelectionService) {
   }
 
   ngOnInit() {

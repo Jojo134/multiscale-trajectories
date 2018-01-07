@@ -1,5 +1,4 @@
 import { PointType } from '../data-structures';
-import * as Graph from 'node-dijkstra';
 export let stringToColor = (function () {
     let instance = null;
 
