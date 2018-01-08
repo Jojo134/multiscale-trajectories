@@ -15,7 +15,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   @Input() private data: Array<TrajectoryViewType>;
   @Input() private quadLines: boolean;
   @Input() private nrLines: number;
-  @Input() private dwellFactor = 0.1;
+  @Input() private dwellFactor: number;
   linefunc1 = d3.line()
     .x(function (d) { return d['x']; })
     .y(function (d) { return d['y']; });
@@ -41,7 +41,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    this.dwellFactor = 0.1;
+    this.dwellFactor = 1;
     if (this.svg) {
       this.updateChart();
     }
@@ -161,7 +161,7 @@ export class Trajview1Component implements OnInit, OnChanges {
       .attr('stroke-width', 3)
       // .attr('fill', function (d) { return d['color']; })
       .attr('fill', 'none')
-      .attr('r', function (d) { console.log(d, this.dwellFactor); return d['duration'] * d['factor']; });
+      .attr('r', function (d) { console.log(d, this.dwellFactor); return Math.sqrt(d['duration'] * d['factor']); });
   }
 
   drawStartPoints(data) {

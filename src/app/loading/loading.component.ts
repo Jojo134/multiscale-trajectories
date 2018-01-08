@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router'
-import { Ng2FileInputService, Ng2FileInputAction } from 'ng2-file-input';
+import { Router } from '@angular/router';
+import { Ng2FileInputService } from 'ng2-file-input';
 import { DataService } from '../shared';
 @Component({
   selector: 'app-loading',
