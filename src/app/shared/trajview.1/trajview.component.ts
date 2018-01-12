@@ -103,7 +103,7 @@ export class Trajview1Component implements OnInit, OnChanges {
   }
   updateChart() {
     console.log(this.data);
-    let dataCopy = _.cloneDeep(this.data);
+    const dataCopy = _.cloneDeep(this.data);
     // console.log(this.keyFuncData(this.data[0]));
     if (this.dwellTimes) {
       this.drawDwellPoints(dataCopy);
@@ -138,7 +138,6 @@ export class Trajview1Component implements OnInit, OnChanges {
     }
     // summierte dauer anzeigen radius abhängig
     // radius/ms als eingabe
-    // checkbox
     this.drawStartPoints(dataCopy);
   }
   drawDwellPoints(data) {

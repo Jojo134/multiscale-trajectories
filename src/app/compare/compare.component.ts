@@ -119,7 +119,7 @@ export class CompareComponent implements OnInit {
         points: this.selected_stimuli2.points
       };
       this.stimuli2_hist.push(removedPoints);
-      this.visibleData = [modifiedstimulus, this.selected_stimuli1];
+      this.visibleData = [this.selected_stimuli1, modifiedstimulus];
       // console.log(modifiedstimulus, this.selected_stimuli1.points);
     }
     this.calcScores(this.visibleData[0], this.visibleData[1]);
