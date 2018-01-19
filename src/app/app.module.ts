@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { MdButtonModule, MdCheckboxModule } from '@angular/material';
+import { MatButtonModule, MatCheckboxModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgProgressModule } from 'ngx-progressbar';
 
@@ -38,7 +38,7 @@ import { LoadingComponent } from './loading/loading.component';
     LoadingComponent
   ],
   imports: [Ng2FileInputModule.forRoot(),
-    BrowserModule, NouisliderModule, MdCheckboxModule, BrowserAnimationsModule,
+    BrowserModule, NouisliderModule, MatCheckboxModule, BrowserAnimationsModule,
     FormsModule, HttpModule, routing, NgProgressModule
   ],
   providers: [appRoutingProviders, DataService, SelectionService, DataResolver],
