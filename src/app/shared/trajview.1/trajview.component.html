@@ -1,5 +1,5 @@
 <div class="row form-inline">
-    <md-checkbox class="col-sm-3" [(ngModel)]="dwellTimes" (ngModelChange)="updateChart()">Dwelltimes </md-checkbox>
+    <mat-checkbox class="col-sm-3" [(ngModel)]="dwellTimes" (ngModelChange)="updateChart()">Dwelltimes </mat-checkbox>
     <div class="form-group col-sm-6">
         <label for="dwellfactor">Factor: </label>
         <input id="dwellfactor" class="form-control" type="number" step="0.1" min="0" [(ngModel)]="dwellFactor" (ngModelChange)="updateChart()">
