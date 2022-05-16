@@ -30,7 +30,7 @@
     "d3-context-menu": "^0.1.2",
     "file-saver": "^1.3.3",
     "font-awesome": "^4.7.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.21",
     "machine_learning": "^0.1.1",
     "mathjs": "^7.5.1",
     "ng2-file-input": "^1.1.0",
